@@ -1,0 +1,30 @@
+<mat-toolbar>
+  <button mat-icon-button (click)="prevDay()" aria-label="Previous day">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+
+  <button mat-icon-button (click)="nextDay()" aria-label="Next day">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+
+  <span class="spacer"></span>
+
+  <mat-form-field appearance="outline" class="date-field">
+    <mat-label>Datum</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [min]="today"
+      [max]="maxDate"
+      [value]="selectedDate()"
+      (dateChange)="onDateChange($event.value)"
+    />
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</mat-toolbar>
+
+<div class="content">
+  <h3>Grid za datum: {{ formatDate(selectedDate()) }}</h3>
+  <p>Opseg: 08:00–20:00 (15 min slotovi)</p>
+</div>
+<app-calendar-grid></app-calendar-grid>

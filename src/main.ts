@@ -1,6 +1,8 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
+import { provideHttpClient } from '@angular/common/http';
+import {DayGrid} from './app/pages/day-grid/day-grid';
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+
+bootstrapApplication(DayGrid, {
+  providers: [provideHttpClient()],
+}).catch(err => console.error(err));

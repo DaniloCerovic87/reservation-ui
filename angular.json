@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "room-calendar-ui": {
+    "reservation-ui": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -59,12 +59,15 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "room-calendar-ui:build:production"
+              "buildTarget": "reservation-ui:build:production"
             },
             "development": {
-              "buildTarget": "room-calendar-ui:build:development"
+              "buildTarget": "reservation-ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -94,5 +97,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

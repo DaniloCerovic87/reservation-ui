@@ -1,0 +1,177 @@
+:root {
+  /* only for reference; component uses its own vars below */
+}
+
+.cal {
+  --time-w: 92px;
+  --col-w: 240px;
+  --slot-h: 28px; /* MUST match slotPx in TS */
+  --line: #f1f1f1;
+  --line-strong: #e8e8e8;
+
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cal__header {
+  display: grid;
+  grid-template-columns: var(--time-w) 1fr;
+  background: #fafafa;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.cal__corner {
+  border-right: 1px solid var(--line-strong);
+}
+
+.cal__headerRooms {
+  overflow: hidden; /* important: header itself does NOT scroll by wheel */
+}
+
+.cal__roomHeaders {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--col-w);
+}
+
+.cal__roomHeader {
+  padding: 10px 12px;
+  border-left: 1px solid var(--line-strong);
+  min-width: var(--col-w);
+}
+
+.roomTitle { font-weight: 800; font-size: 14px; }
+.roomSub { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+
+/* BODY (the only scroller) */
+.cal__body {
+  display: grid;
+  grid-template-columns: var(--time-w) 1fr;
+  max-height: 70vh;
+  overflow: auto; /* ✅ vertical + horizontal scroll here */
+}
+
+/* TIME COLUMN (sticky left) */
+.cal__timeCol {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: #fff;
+  border-right: 1px solid var(--line-strong);
+
+  /* horizontal lines via background (no drift) */
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--slot-h) - 1px),
+      var(--line) calc(var(--slot-h) - 1px),
+      var(--line) var(--slot-h)
+  );
+}
+
+.timeTick {
+  height: var(--slot-h);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.timeTick--hour {
+  opacity: 0.95;
+  font-weight: 800;
+}
+
+/* ROOMS AREA (scrolls with body) */
+.cal__rooms {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--col-w);
+}
+
+.roomCol {
+  position: relative;
+  border-left: 1px solid var(--line-strong);
+  min-width: var(--col-w);
+  min-height: calc(var(--slot-h) * 48);
+}
+
+/* grid background inside each room column */
+.roomBg {
+  position: absolute;
+  inset: 0;
+
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--slot-h) - 1px),
+      var(--line) calc(var(--slot-h) - 1px),
+      var(--line) var(--slot-h)
+  );
+}
+
+/* BLOCKS */
+.block {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  border-radius: 14px;
+  padding: 10px 10px 8px;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.06);
+  box-sizing: border-box;
+  overflow: hidden;
+
+  z-index: 2; /* above background */
+}
+
+.block__title {
+  font-weight: 900;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.block__meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.block__time {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+.pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.06);
+}
+
+.pill--pending { background: rgba(25,118,210,.14); }
+.pill--approved { background: rgba(211,47,47,.14); }
+.pill--type { opacity: 0.85; }
+
+.s-pending { outline: 2px dashed rgba(0,0,0,.18); outline-offset: -2px; }
+.s-approved { outline: 0; }
+
+/* Pending = blue shades by type */
+.c-pending-basic      { background: rgba(25,118,210,.16); }
+.c-pending-master     { background: rgba(25,118,210,.24); }
+.c-pending-specialist { background: rgba(25,118,210,.32); }
+.c-pending-doctoral   { background: rgba(25,118,210,.40); }
+
+/* Approved = red shades by type */
+.c-approved-basic      { background: rgba(211,47,47,.16); }
+.c-approved-master     { background: rgba(211,47,47,.24); }
+.c-approved-specialist { background: rgba(211,47,47,.32); }
+.c-approved-doctoral   { background: rgba(211,47,47,.40); }

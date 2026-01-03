@@ -1,0 +1,51 @@
+<div class="cal">
+  <div class="cal__header">
+    <div class="cal__corner"></div>
+
+    <div class="cal__headerRooms" #headerRooms>
+      <div class="cal__roomHeaders">
+        @for (room of rooms; track room) {
+          <div class="cal__roomHeader">
+            <div class="roomTitle">Soba {{ room }}</div>
+            <div class="roomSub">08:00–20:00</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="cal__body" #bodyScroll (scroll)="onBodyScroll()">
+    <div class="cal__timeCol">
+      @for (t of times; track t) {
+        <div class="timeTick" [class.timeTick--hour]="t.endsWith(':00')">
+          {{ t }}
+        </div>
+      }
+    </div>
+
+    <div class="cal__rooms">
+      @for (room of rooms; track room) {
+        <div class="roomCol">
+          <div class="roomBg"></div>
+          @for (r of reservationsForRoom(room); track r.reservationId) {
+            <div
+              class="block"
+              [ngClass]="[statusClass(r), colorClass(r)]"
+              [ngStyle]="blockStyle(r)"
+              title="{{ r.reservationName }} ({{ r.status }} / {{ r.reservationType }})"
+            >
+              <div class="block__title">{{ r.reservationName }}</div>
+              <div class="block__meta">
+                <span class="pill" [class.pill--pending]="r.status === 'PENDING'" [class.pill--approved]="r.status === 'APPROVED'">
+                  {{ r.status }}
+                </span>
+                <span class="pill pill--type">{{ r.reservationType }}</span>
+              </div>
+              <div class="block__time">{{ hhmm(r.startTime) }}–{{ hhmm(r.endTime) }}</div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

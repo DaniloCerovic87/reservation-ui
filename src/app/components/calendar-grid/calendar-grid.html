@@ -26,7 +26,6 @@
     <div class="cal__rooms">
       @for (room of rooms; track room) {
         <div class="roomCol">
-          <div class="roomBg"></div>
           @for (r of reservationsForRoom(room); track r.reservationId) {
             <div
               class="block"

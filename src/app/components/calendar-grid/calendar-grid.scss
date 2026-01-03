@@ -1,5 +1,4 @@
 :root {
-  /* only for reference; component uses its own vars below */
 }
 
 .cal {
@@ -45,7 +44,6 @@
 .roomTitle { font-weight: 800; font-size: 14px; }
 .roomSub { font-size: 12px; opacity: 0.7; margin-top: 2px; }
 
-/* BODY (the only scroller) */
 .cal__body {
   display: grid;
   grid-template-columns: var(--time-w) 1fr;
@@ -53,7 +51,6 @@
   overflow: auto; /* ✅ vertical + horizontal scroll here */
 }
 
-/* TIME COLUMN (sticky left) */
 .cal__timeCol {
   position: sticky;
   left: 0;
@@ -61,7 +58,6 @@
   background: #fff;
   border-right: 1px solid var(--line-strong);
 
-  /* horizontal lines via background (no drift) */
   background-image: repeating-linear-gradient(
       to bottom,
       transparent,
@@ -85,33 +81,42 @@
   font-weight: 800;
 }
 
-/* ROOMS AREA (scrolls with body) */
 .cal__rooms {
+  position: relative;        /* bitno za ::before */
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: var(--col-w);
 }
 
+.cal__rooms::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--slot-h) - 1px),
+      var(--line) calc(var(--slot-h) - 1px),
+      var(--line) var(--slot-h)
+  );
+
+  background-size: 100% var(--slot-h);
+  background-position: 0 0;
+}
+
 .roomCol {
   position: relative;
+  z-index: 1;
+
   border-left: 1px solid var(--line-strong);
   min-width: var(--col-w);
   min-height: calc(var(--slot-h) * 48);
 }
 
-/* grid background inside each room column */
-.roomBg {
-  position: absolute;
-  inset: 0;
 
-  background-image: repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent calc(var(--slot-h) - 1px),
-      var(--line) calc(var(--slot-h) - 1px),
-      var(--line) var(--slot-h)
-  );
-}
 
 /* BLOCKS */
 .block {

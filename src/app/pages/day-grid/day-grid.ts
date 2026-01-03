@@ -1,14 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import {CalendarGrid} from '../../components/calendar-grid/calendar-grid';
 
 @Component({
@@ -16,48 +15,41 @@ import {CalendarGrid} from '../../components/calendar-grid/calendar-grid';
   selector: 'app-day-grid',
   imports: [
     CommonModule,
+    CalendarGrid,
+
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    CalendarGrid
+    MatDatepickerModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './day-grid.html',
-  styleUrl: './day-grid.scss'
+  styleUrl: './day-grid.scss',
 })
 export class DayGrid {
-  today = new Date();
-  maxDate = new Date(this.today.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-  selectedDate = signal<Date>(this.today);
+  selectedDate = new Date(); // default: today
 
   prevDay() {
-    const d = new Date(this.selectedDate());
-    d.setDate(d.getDate() - 1);
-    if (d < this.today) return;
-    this.selectedDate.set(d);
+    this.selectedDate = this.addDays(this.selectedDate, -1);
   }
 
   nextDay() {
-    const d = new Date(this.selectedDate());
-    d.setDate(d.getDate() + 1);
-    if (d > this.maxDate) return;
-    this.selectedDate.set(d);
+    this.selectedDate = this.addDays(this.selectedDate, 1);
   }
 
-  onDateChange(d: Date | null) {
-    if (!d) return;
-    if (d < this.today || d > this.maxDate) return;
-    this.selectedDate.set(d);
+  today() {
+    this.selectedDate = new Date();
   }
 
-  formatDate(d: Date): string {
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+  onDatePicked(d: Date | null) {
+    if (d) this.selectedDate = d;
+  }
+
+  private addDays(date: Date, days: number) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
   }
 }

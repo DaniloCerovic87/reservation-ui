@@ -1,3 +1,17 @@
-.spacer { flex: 1; }
-.date-field { width: 220px; }
-.content { padding: 16px; }
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.dateField {
+  width: 220px;
+}
+
+.content {
+  padding: 12px;
+}

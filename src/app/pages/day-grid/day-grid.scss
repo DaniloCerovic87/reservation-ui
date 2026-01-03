@@ -2,16 +2,21 @@
   position: sticky;
   top: 0;
   z-index: 10;
+
+  /* BITNO */
+  overflow: visible;
+  height: auto;
+  min-height: 72px;      /* dovoljno za mat-form-field */
+  padding: 8px 16px;     /* malo “lufta” gore/dole */
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  background: var(--mat-sys-surface);
 }
 
 .spacer {
   flex: 1 1 auto;
-}
-
-.dateField {
-  width: 220px;
-}
-
-.content {
-  padding: 12px;
 }

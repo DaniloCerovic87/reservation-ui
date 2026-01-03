@@ -1,3 +1,9 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .toolbar {
   position: sticky;
   top: 0;
@@ -6,8 +12,8 @@
   /* BITNO */
   overflow: visible;
   height: auto;
-  min-height: 72px;      /* dovoljno za mat-form-field */
-  padding: 8px 16px;     /* malo “lufta” gore/dole */
+  min-height: 72px;
+  padding: 8px 16px;
   box-sizing: border-box;
 
   display: flex;
@@ -19,4 +25,10 @@
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;   /* KRITIČNO */
+  padding: 12px;
 }

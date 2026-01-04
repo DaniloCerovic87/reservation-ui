@@ -29,7 +29,7 @@ import {CalendarGrid} from '../../components/calendar-grid/calendar-grid';
   styleUrl: './day-grid.scss',
 })
 export class DayGrid {
-  selectedDate = new Date(); // default: today
+  selectedDate = new Date();
 
   prevDay() {
     this.selectedDate = this.addDays(this.selectedDate, -1);
@@ -51,5 +51,12 @@ export class DayGrid {
     const d = new Date(date);
     d.setDate(d.getDate() + days);
     return d;
+  }
+
+  get selectedDateIso(): string {
+    const y = this.selectedDate.getFullYear();
+    const m = String(this.selectedDate.getMonth() + 1).padStart(2, '0');
+    const d = String(this.selectedDate.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 }

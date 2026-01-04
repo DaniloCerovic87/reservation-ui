@@ -88,7 +88,7 @@
 }
 
 .cal__rooms {
-  position: relative;        /* bitno za ::before */
+  position: relative;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: var(--col-w);
@@ -122,8 +122,6 @@
   min-height: calc(var(--slot-h) * 48);
 }
 
-
-
 /* BLOCKS */
 .block {
   position: absolute;
@@ -136,6 +134,7 @@
   border: 1px solid rgba(0,0,0,.06);
   box-sizing: border-box;
   overflow: hidden;
+  cursor: pointer;
 
   z-index: 2; /* above background */
 }

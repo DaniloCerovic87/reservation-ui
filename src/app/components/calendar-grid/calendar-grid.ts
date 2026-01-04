@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ReservationBlock} from '../../core/models/reservation-block';
 import {CommonModule} from '@angular/common';
 import {catchError, finalize, map, of} from 'rxjs';
@@ -12,11 +12,11 @@ import {toReservationBlock} from '../../core/mappers/calendar.mapper';
   templateUrl: './calendar-grid.html',
   styleUrl: './calendar-grid.scss',
 })
-export class CalendarGrid implements OnInit {
-  @ViewChild('headerRooms', { static: true }) headerRooms!: ElementRef<HTMLDivElement>;
-  @ViewChild('bodyScroll', { static: true }) bodyScroll!: ElementRef<HTMLDivElement>
+export class CalendarGrid implements OnInit, OnChanges {
+  @ViewChild('headerRooms', {static: true}) headerRooms!: ElementRef<HTMLDivElement>;
+  @ViewChild('bodyScroll', {static: true}) bodyScroll!: ElementRef<HTMLDivElement>
 
-  selectedDate = '2025-12-29';
+  @Input({ required: true }) selectedDate!: string;
   isLoading = false;
   errorMsg: string | null = null;
   reservations: ReservationBlock[] = [];
@@ -29,10 +29,17 @@ export class CalendarGrid implements OnInit {
 
   rooms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-  constructor(private calendarApi: CalendarApiService) {}
+  constructor(private calendarApi: CalendarApiService) {
+  }
 
   ngOnInit(): void {
     this.loadDay(this.selectedDate);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedDate']?.currentValue && !changes['selectedDate']?.firstChange) {
+      this.loadDay(this.selectedDate);
+    }
   }
 
   loadDay(date: string) {
@@ -52,7 +59,7 @@ export class CalendarGrid implements OnInit {
     });
   }
 
-  times: string[] = Array.from({ length: 48 }, (_, i) => {
+  times: string[] = Array.from({length: 48}, (_, i) => {
     const total = i * this.slotMinutes;
     const h = this.startHour + Math.floor(total / 60);
     const m = total % 60;
@@ -107,5 +114,14 @@ export class CalendarGrid implements OnInit {
   hhmm(iso: string) {
     return iso.substring(11, 16);
   }
+
+  isCompact(r: ReservationBlock): boolean {
+    const startMin = this.minutesFromGridStart(r.startTime);
+    const endMin = this.minutesFromGridStart(r.endTime);
+    const durationMin = Math.max(0, endMin - startMin);
+
+    return durationMin <= 30; // <= 30 min = compact (promeni ako želiš)
+  }
+
 
 }

@@ -31,16 +31,15 @@
               class="block"
               [ngClass]="[statusClass(r), colorClass(r)]"
               [ngStyle]="blockStyle(r)"
-              title="{{ r.reservationName }} ({{ r.status }} / {{ r.reservationType }})"
+              [title]="
+              r.reservationName + ' - ' + r.employeeName + '\n' +
+              hhmm(r.startTime) + '–' + hhmm(r.endTime)
+              "
             >
-              <div class="block__title">{{ r.reservationName }}</div>
-              <div class="block__meta">
-                <span class="pill" [class.pill--pending]="r.status === 'PENDING'" [class.pill--approved]="r.status === 'APPROVED'">
-                  {{ r.status }}
-                </span>
-                <span class="pill pill--type">{{ r.reservationType }}</span>
-              </div>
-              <div class="block__time">{{ hhmm(r.startTime) }}–{{ hhmm(r.endTime) }}</div>
+              @if (!isCompact(r)) {
+                <div class="block__title">{{ r.reservationName }}</div>
+                <div class="block__subtitle">{{ r.employeeName }}</div>
+              }
             </div>
           }
         </div>

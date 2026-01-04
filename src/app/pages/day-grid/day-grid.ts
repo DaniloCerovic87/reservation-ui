@@ -9,6 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import {CalendarGrid} from '../../components/calendar-grid/calendar-grid';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   standalone: true,
@@ -23,13 +26,17 @@ import {CalendarGrid} from '../../components/calendar-grid/calendar-grid';
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
+    FormsModule,
+    MatButtonToggleModule,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './day-grid.html',
-  styleUrl: './day-grid.scss',
+  styleUrls: ['./day-grid.scss'],
 })
 export class DayGrid {
   selectedDate = new Date();
+  viewMode: 'ALL' | 'MINE' = 'ALL';
+  myEmployeeId = 51;
 
   prevDay() {
     this.selectedDate = this.addDays(this.selectedDate, -1);

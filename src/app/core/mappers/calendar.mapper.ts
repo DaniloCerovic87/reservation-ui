@@ -4,12 +4,17 @@ import { ReservationBlock, ReservationStatus, ReservationType } from '../models/
 const STATUSES: ReservationStatus[] = ['PENDING','APPROVED','REJECTED','CANCELLED'];
 const TYPES: ReservationType[] = ['BASIC','MASTER','SPECIALIST','DOCTORAL'];
 
+function norm(s: string): string {
+  return (s ?? '').trim().toUpperCase();
+}
 function asStatus(s: string): ReservationStatus {
-  return (STATUSES as readonly string[]).includes(s) ? (s as ReservationStatus) : 'PENDING';
+  const v = norm(s);
+  return (STATUSES as readonly string[]).includes(v) ? (s as ReservationStatus) : 'PENDING';
 }
 
 function asType(t: string): ReservationType {
-  return (TYPES as readonly string[]).includes(t) ? (t as ReservationType) : 'BASIC';
+  const v = norm(t);
+  return (TYPES as readonly string[]).includes(v) ? (t as ReservationType) : 'BASIC';
 }
 
 export function toReservationBlock(e: CalendarEntryDto): ReservationBlock {

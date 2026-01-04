@@ -11,6 +11,16 @@
 
   <span class="spacer"></span>
 
+  <mat-button-toggle-group
+    [(ngModel)]="viewMode"
+    aria-label="Filter rezervacija"
+    class="filterGroup">
+    <mat-button-toggle value="ALL">Sve</mat-button-toggle>
+    <mat-button-toggle value="MINE">Moje</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <span class="spacer"></span>
+
   <mat-form-field appearance="outline" class="dateField">
     <input
       matInput
@@ -24,5 +34,7 @@
 </mat-toolbar>
 
 <div class="content">
-  <app-calendar-grid [selectedDate]="selectedDateIso"></app-calendar-grid>
+  <app-calendar-grid [selectedDate]="selectedDateIso"
+                     [showOnlyMine]="viewMode === 'MINE'"
+                     [myEmployeeId]="myEmployeeId"></app-calendar-grid>
 </div>

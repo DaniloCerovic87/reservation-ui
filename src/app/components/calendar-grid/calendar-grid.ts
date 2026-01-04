@@ -10,16 +10,19 @@ import {toReservationBlock} from '../../core/mappers/calendar.mapper';
   selector: 'app-calendar-grid',
   imports: [CommonModule],
   templateUrl: './calendar-grid.html',
-  styleUrl: './calendar-grid.scss',
+  styleUrls: ['./calendar-grid.scss'],
 })
 export class CalendarGrid implements OnInit, OnChanges {
   @ViewChild('headerRooms', {static: true}) headerRooms!: ElementRef<HTMLDivElement>;
   @ViewChild('bodyScroll', {static: true}) bodyScroll!: ElementRef<HTMLDivElement>
 
   @Input({ required: true }) selectedDate!: string;
+  @Input() showOnlyMine = false;
+  @Input() myEmployeeId!: number;
+
   isLoading = false;
   errorMsg: string | null = null;
-  reservations: ReservationBlock[] = [];
+  allReservations: ReservationBlock[] = [];
 
   startHour = 8;
   endHour = 20;
@@ -51,11 +54,15 @@ export class CalendarGrid implements OnInit, OnChanges {
       finalize(() => this.isLoading = false),
       catchError(err => {
         this.errorMsg = 'Ne mogu da učitam rezervacije.';
-        this.reservations = [];
+        this.allReservations = [];
         return of([] as ReservationBlock[]);
       }),
     ).subscribe(blocks => {
-      this.reservations = blocks;
+      this.allReservations = blocks;
+      console.log(blocks.length);
+      console.log('classes test', blocks[0]?.status, blocks[0]?.reservationType, this.colorClass(blocks[0]));
+      console.log('classes test', blocks[1]?.status, blocks[1]?.reservationType, this.colorClass(blocks[1]));
+      console.log('classes test', blocks[2]?.status, blocks[2]?.reservationType, this.colorClass(blocks[2]));
     });
   }
 
@@ -70,8 +77,13 @@ export class CalendarGrid implements OnInit, OnChanges {
     this.headerRooms.nativeElement.scrollLeft = this.bodyScroll.nativeElement.scrollLeft;
   }
 
+  get visibleReservations(): ReservationBlock[] {
+    if (!this.showOnlyMine) return this.allReservations;
+    return this.allReservations.filter(r => r.employeeId === this.myEmployeeId);
+  }
+
   reservationsForRoom(roomId: number) {
-    return this.reservations.filter(r => r.roomId === roomId);
+    return this.visibleReservations.filter(r => r.roomId === roomId);
   }
 
   colorClass(r: ReservationBlock) {
@@ -122,6 +134,5 @@ export class CalendarGrid implements OnInit, OnChanges {
 
     return durationMin <= 30; // <= 30 min = compact (promeni ako želiš)
   }
-
 
 }

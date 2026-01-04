@@ -181,13 +181,13 @@
 .pill--type { opacity: 0.85; }
 
 /* Pending = blue shades by type */
-.c-pending-basic      { background: rgba(25,118,210,.16); }
-.c-pending-master     { background: rgba(25,118,210,.24); }
-.c-pending-specialist { background: rgba(25,118,210,.32); }
-.c-pending-doctoral   { background: rgba(25,118,210,.40); }
+.c-pending-basic      { background: rgba(25,118,210,.12); }
+.c-pending-master     { background: rgba(25,118,210,.26); }
+.c-pending-specialist { background: rgba(25,118,210,.40); }
+.c-pending-doctoral   { background: rgba(25,118,210,.54); }
 
 /* Approved = red shades by type */
-.c-approved-basic      { background: rgba(211,47,47,.16); }
-.c-approved-master     { background: rgba(211,47,47,.24); }
-.c-approved-specialist { background: rgba(211,47,47,.32); }
-.c-approved-doctoral   { background: rgba(211,47,47,.40); }
+.c-approved-basic      { background: rgba(211,47,47,.12); }
+.c-approved-master     { background: rgba(211,47,47,.26); }
+.c-approved-specialist { background: rgba(211,47,47,.40); }
+.c-approved-doctoral   { background: rgba(211,47,47,.54); }

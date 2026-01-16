@@ -9,12 +9,12 @@ function norm(s: string): string {
 }
 function asStatus(s: string): ReservationStatus {
   const v = norm(s);
-  return (STATUSES as readonly string[]).includes(v) ? (s as ReservationStatus) : 'PENDING';
+  return (STATUSES as readonly string[]).includes(v) ? (v as ReservationStatus) : 'PENDING';
 }
 
 function asType(t: string): ReservationType {
   const v = norm(t);
-  return (TYPES as readonly string[]).includes(v) ? (t as ReservationType) : 'BASIC';
+  return (TYPES as readonly string[]).includes(v) ? (v as ReservationType) : 'BASIC';
 }
 
 export function toReservationBlock(e: CalendarEntryDto): ReservationBlock {

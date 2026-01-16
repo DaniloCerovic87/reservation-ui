@@ -4,9 +4,9 @@
 
     <div class="cal__headerRooms" #headerRooms>
       <div class="cal__roomHeaders">
-        @for (room of rooms; track room) {
+        @for (room of rooms; track room.id) {
           <div class="cal__roomHeader">
-            <div class="roomTitle">Soba {{ room }}</div>
+            <div class="roomTitle">{{ room.name }}</div>
             <div class="roomSub">08:00–20:00</div>
           </div>
         }
@@ -24,16 +24,16 @@
     </div>
 
     <div class="cal__rooms">
-      @for (room of rooms; track room) {
+      @for (room of rooms; track room.id) {
         <div class="roomCol">
-          @for (r of reservationsForRoom(room); track r.reservationId) {
+          @for (r of reservationsForRoom(room.id); track r.reservationId) {
             <div
               class="block"
               [ngClass]="[statusClass(r), colorClass(r)]"
               [ngStyle]="blockStyle(r)"
               [title]="
-              r.reservationName + ' - ' + r.employeeName + '\n' +
-              hhmm(r.startTime) + '–' + hhmm(r.endTime)
+                r.reservationName + ' - ' + r.employeeName + '\n' +
+                hhmm(r.startTime) + '–' + hhmm(r.endTime)
               "
             >
               @if (!isCompact(r)) {

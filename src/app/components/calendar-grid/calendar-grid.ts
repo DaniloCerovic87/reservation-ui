@@ -1,8 +1,10 @@
 import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ReservationBlock} from '../../core/models/reservation-block';
+import {RoomDto} from '../../core/models/room.dto';
 import {CommonModule} from '@angular/common';
 import {catchError, finalize, map, of} from 'rxjs';
 import {CalendarApiService} from '../../core/services/calendar-api';
+import {RoomApiService} from '../../core/services/room-api';
 import {toReservationBlock} from '../../core/mappers/calendar.mapper';
 
 @Component({
@@ -16,7 +18,7 @@ export class CalendarGrid implements OnInit, OnChanges {
   @ViewChild('headerRooms', {static: true}) headerRooms!: ElementRef<HTMLDivElement>;
   @ViewChild('bodyScroll', {static: true}) bodyScroll!: ElementRef<HTMLDivElement>
 
-  @Input({ required: true }) selectedDate!: string;
+  @Input({required: true}) selectedDate!: string;
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
 
@@ -30,12 +32,15 @@ export class CalendarGrid implements OnInit, OnChanges {
 
   slotPx = 28;
 
-  rooms = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  rooms: RoomDto[] = [];
 
-  constructor(private calendarApi: CalendarApiService) {
+  constructor(
+    private calendarApi: CalendarApiService,
+    private roomApi: RoomApiService) {
   }
 
   ngOnInit(): void {
+    this.loadRooms();
     this.loadDay(this.selectedDate);
   }
 
@@ -43,6 +48,12 @@ export class CalendarGrid implements OnInit, OnChanges {
     if (changes['selectedDate']?.currentValue && !changes['selectedDate']?.firstChange) {
       this.loadDay(this.selectedDate);
     }
+  }
+
+  loadRooms() {
+    this.roomApi.getAllRooms().subscribe(rooms => {
+      this.rooms = rooms;
+    });
   }
 
   loadDay(date: string) {
@@ -59,10 +70,6 @@ export class CalendarGrid implements OnInit, OnChanges {
       }),
     ).subscribe(blocks => {
       this.allReservations = blocks;
-      console.log(blocks.length);
-      console.log('classes test', blocks[0]?.status, blocks[0]?.reservationType, this.colorClass(blocks[0]));
-      console.log('classes test', blocks[1]?.status, blocks[1]?.reservationType, this.colorClass(blocks[1]));
-      console.log('classes test', blocks[2]?.status, blocks[2]?.reservationType, this.colorClass(blocks[2]));
     });
   }
 

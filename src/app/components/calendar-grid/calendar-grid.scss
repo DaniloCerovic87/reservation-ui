@@ -4,7 +4,7 @@
 .cal {
   --time-w: 92px;
   --col-w: 240px;
-  --slot-h: 28px; /* MUST match slotPx in TS */
+  --slot-h: 28px;
   --line: #f1f1f1;
   --line-strong: #e8e8e8;
 
@@ -30,7 +30,7 @@
 }
 
 .cal__headerRooms {
-  overflow: hidden; /* important: header itself does NOT scroll by wheel */
+  overflow: hidden;
 }
 
 .cal__roomHeaders {

@@ -1,26 +1,61 @@
-:root {
+:host {
+  display: block;
+  min-height: 0;
+  height: 100%;
 }
 
+/* Wrapper: center when there are few rooms,
+   align to start when there are many (horizontal overflow) */
+.calWrap {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  /* No scrolling here (horizontal scroll lives in body + header) */
+  overflow: hidden;
+}
+
+.calWrap.has-x-scroll {
+  justify-content: flex-start;
+}
+
+/* Card: content width (up to the last room column) */
 .cal {
   --time-w: 92px;
   --col-w: 240px;
   --slot-h: 28px;
+
   --line: #f1f1f1;
   --line-strong: #e8e8e8;
 
+  /* Fallback if --slots is not provided from the component */
+  --slots: 48;
+  --grid-h: calc(var(--slot-h) * var(--slots));
+
   border: 1px solid #e6e6e6;
   border-radius: 14px;
-  overflow: hidden;
   background: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  display: inline-flex;
+  flex-direction: column;
+
+  width: fit-content;
+  max-width: 100%;
 
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
 }
 
+/* HEADER */
 .cal__header {
   display: grid;
-  grid-template-columns: var(--time-w) 1fr;
+  grid-template-columns: var(--time-w) minmax(0, 1fr);
   background: #fafafa;
   border-bottom: 1px solid var(--line-strong);
 }
@@ -29,8 +64,11 @@
   border-right: 1px solid var(--line-strong);
 }
 
+/* Header second column:
+   must not create its own scrollbar (it is synced via scrollLeft) */
 .cal__headerRooms {
   overflow: hidden;
+  min-width: 0;
 }
 
 .cal__roomHeaders {
@@ -39,30 +77,55 @@
   grid-auto-columns: var(--col-w);
 }
 
+/* NOTE:
+   border-left caused 1–N px horizontal overflow due to subpixel rounding.
+   We draw the vertical line using inset box-shadow instead (no layout impact). */
 .cal__roomHeader {
   padding: 10px 12px;
-  border-left: 1px solid var(--line-strong);
+  border-left: 0;
+  box-shadow: inset 1px 0 0 var(--line-strong);
   min-width: var(--col-w);
 }
 
-.roomTitle { font-weight: 800; font-size: 14px; }
-.roomSub { font-size: 12px; opacity: 0.7; margin-top: 2px; }
-
-.cal__body {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: var(--time-w) 1fr;
-  overflow: auto;
-  max-height: none;
+.roomTitle {
+  font-weight: 800;
+  font-size: 14px;
 }
 
+.roomSub {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* BODY:
+   vertical scrolling + horizontal scrolling
+   (this is the only horizontal scrollbar in the calendar) */
+.cal__body {
+  display: grid;
+  grid-template-columns: var(--time-w) minmax(0, 1fr);
+
+  min-height: 0;
+  min-width: 0;
+
+  flex: 1;
+
+  overflow-y: auto;
+  overflow-x: auto;
+
+  /* Keeps layout width stable when vertical scrollbar appears/disappears */
+  scrollbar-gutter: stable;
+}
+
+/* LEFT TIME COLUMN (sticky) */
 .cal__timeCol {
   position: sticky;
   left: 0;
   z-index: 3;
   background: #fff;
   border-right: 1px solid var(--line-strong);
+
+  min-height: var(--grid-h);
 
   background-image: repeating-linear-gradient(
       to bottom,
@@ -80,49 +143,44 @@
   padding: 0 10px;
   font-size: 12px;
   opacity: 0.75;
+
+  &--hour {
+    opacity: 0.95;
+    font-weight: 800;
+  }
 }
 
-.timeTick--hour {
-  opacity: 0.95;
-  font-weight: 800;
-}
-
+/* ROOMS GRID */
 .cal__rooms {
   position: relative;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: var(--col-w);
+  min-width: 0;
 }
 
-.cal__rooms::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+/* NOTE:
+   Same border → inset shadow trick as in header to avoid phantom overflow */
+.roomCol {
+  position: relative;
+  z-index: 1;
+  border-left: 0;
+  box-shadow: inset 1px 0 0 var(--line-strong);
+  min-width: var(--col-w);
 
+  min-height: var(--grid-h);
+
+  /* Time grid lines per column (applies to all rooms) */
   background-image: repeating-linear-gradient(
       to bottom,
-      transparent 0,
+      transparent,
       transparent calc(var(--slot-h) - 1px),
       var(--line) calc(var(--slot-h) - 1px),
       var(--line) var(--slot-h)
   );
-
-  background-size: 100% var(--slot-h);
-  background-position: 0 0;
 }
 
-.roomCol {
-  position: relative;
-  z-index: 1;
-
-  border-left: 1px solid var(--line-strong);
-  min-width: var(--col-w);
-  min-height: calc(var(--slot-h) * 48);
-}
-
-/* BLOCKS */
+/* RESERVATION BLOCKS */
 .block {
   position: absolute;
   left: 10px;
@@ -130,13 +188,13 @@
   border-radius: 14px;
   padding: 10px 10px 8px;
 
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   overflow: hidden;
   cursor: pointer;
 
-  z-index: 2; /* above background */
+  z-index: 2;
 }
 
 .block__title {
@@ -156,38 +214,13 @@
   text-overflow: ellipsis;
 }
 
-.block__meta {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-top: 6px;
-}
+/* STATUS COLORS */
+.c-pending-basic { background: rgba(25, 118, 210, 0.12); }
+.c-pending-master { background: rgba(25, 118, 210, 0.26); }
+.c-pending-specialist { background: rgba(25, 118, 210, 0.4); }
+.c-pending-doctoral { background: rgba(25, 118, 210, 0.54); }
 
-.block__time {
-  font-size: 12px;
-  opacity: 0.85;
-  margin-top: 6px;
-}
-
-.pill {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(0,0,0,.06);
-}
-
-.pill--pending { background: rgba(25,118,210,.14); }
-.pill--approved { background: rgba(211,47,47,.14); }
-.pill--type { opacity: 0.85; }
-
-/* Pending = blue shades by type */
-.c-pending-basic      { background: rgba(25,118,210,.12); }
-.c-pending-master     { background: rgba(25,118,210,.26); }
-.c-pending-specialist { background: rgba(25,118,210,.40); }
-.c-pending-doctoral   { background: rgba(25,118,210,.54); }
-
-/* Approved = red shades by type */
-.c-approved-basic      { background: rgba(211,47,47,.12); }
-.c-approved-master     { background: rgba(211,47,47,.26); }
-.c-approved-specialist { background: rgba(211,47,47,.40); }
-.c-approved-doctoral   { background: rgba(211,47,47,.54); }
+.c-approved-basic { background: rgba(211, 47, 47, 0.12); }
+.c-approved-master { background: rgba(211, 47, 47, 0.26); }
+.c-approved-specialist { background: rgba(211, 47, 47, 0.4); }
+.c-approved-doctoral { background: rgba(211, 47, 47, 0.54); }

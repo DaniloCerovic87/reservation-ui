@@ -1,49 +1,51 @@
-<div class="cal">
-  <div class="cal__header">
-    <div class="cal__corner"></div>
+<div class="calWrap">
+  <div class="cal" [ngStyle]="{ '--slots': slotsCss }">
+    <div class="cal__header">
+      <div class="cal__corner"></div>
 
-    <div class="cal__headerRooms" #headerRooms>
-      <div class="cal__roomHeaders">
-        @for (room of rooms; track room.id) {
-          <div class="cal__roomHeader">
-            <div class="roomTitle">{{ room.name }}</div>
-            <div class="roomSub">08:00–20:00</div>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <div class="cal__body" #bodyScroll (scroll)="onBodyScroll()">
-    <div class="cal__timeCol">
-      @for (t of times; track t) {
-        <div class="timeTick" [class.timeTick--hour]="t.endsWith(':00')">
-          {{ t }}
-        </div>
-      }
-    </div>
-
-    <div class="cal__rooms">
-      @for (room of rooms; track room.id) {
-        <div class="roomCol">
-          @for (r of reservationsForRoom(room.id); track r.reservationId) {
-            <div
-              class="block"
-              [ngClass]="[statusClass(r), colorClass(r)]"
-              [ngStyle]="blockStyle(r)"
-              [title]="
-                r.reservationName + ' - ' + r.employeeName + '\n' +
-                hhmm(r.startTime) + '–' + hhmm(r.endTime)
-              "
-            >
-              @if (!isCompact(r)) {
-                <div class="block__title">{{ r.reservationName }}</div>
-                <div class="block__subtitle">{{ r.employeeName }}</div>
-              }
+      <div class="cal__headerRooms" #headerRooms>
+        <div class="cal__roomHeaders">
+          @for (room of rooms; track room.id) {
+            <div class="cal__roomHeader">
+              <div class="roomTitle">{{ room.name }}</div>
+              <div class="roomSub">08:00–22:00</div>
             </div>
           }
         </div>
-      }
+      </div>
+    </div>
+
+    <div class="cal__body" #bodyScroll (scroll)="onBodyScroll()">
+      <div class="cal__timeCol">
+        @for (t of times; track t) {
+          <div class="timeTick" [class.timeTick--hour]="t.endsWith(':00')">
+            {{ t }}
+          </div>
+        }
+      </div>
+
+      <div class="cal__rooms">
+        @for (room of rooms; track room.id) {
+          <div class="roomCol">
+            @for (r of reservationsForRoom(room.id); track r.reservationId) {
+              <div
+                class="block"
+                [ngClass]="[statusClass(r), colorClass(r)]"
+                [ngStyle]="blockStyle(r)"
+                [title]="
+                r.reservationName + ' - ' + r.employeeName + '\n' +
+                hhmm(r.startTime) + '–' + hhmm(r.endTime)
+              "
+              >
+                @if (!isCompact(r)) {
+                  <div class="block__title">{{ r.reservationName }}</div>
+                  <div class="block__subtitle">{{ r.employeeName }}</div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
   </div>
 </div>

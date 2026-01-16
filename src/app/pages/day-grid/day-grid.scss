@@ -1,25 +1,43 @@
 :host {
   display: flex;
   flex-direction: column;
+
+  /* Important: the flex layout needs a defined height to measure against.
+     If your app root already provides 100% height, this is fine.
+     If not, see the note below for html/body height. */
   height: 100%;
+  min-height: 0;
 }
 
+/* NOTE (global layout):
+   If you ever see the content collapsing or the calendar not filling the page height,
+   make sure these exist somewhere globally (e.g. styles.scss):
+   html, body { height: 100%; }
+   app-root { height: 100%; display: block; } */
+
+/* Toolbar stays sticky at the top */
 .toolbar {
   position: sticky;
   top: 0;
   z-index: 10;
 
   overflow: visible;
+
+  /* Angular Material toolbar is already flex, but we keep it explicit */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
   height: auto;
   min-height: 72px;
   padding: 8px 16px;
   box-sizing: border-box;
 
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
   background: var(--mat-sys-surface);
+}
+
+.spacer {
+  flex: 1 1 auto;
 }
 
 .dateField {
@@ -28,12 +46,24 @@
   transform: translateY(12px);
 }
 
-.spacer {
-  flex: 1 1 auto;
-}
-
+/* The content area must be a flex container so the child (app-calendar-grid)
+   can use flex: 1 and fill the remaining height */
 .content {
   flex: 1;
   min-height: 0;
+
   padding: 12px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* KEY POINT:
+   The calendar component must be allowed to grow and shrink inside the flex layout.
+   min-height: 0 prevents overflow issues where a flex child refuses to shrink. */
+.content > app-calendar-grid {
+  flex: 1;
+  min-height: 0;
+  display: block;
 }

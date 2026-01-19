@@ -26,7 +26,15 @@
 
       <div class="cal__rooms">
         @for (room of rooms; track room.id) {
-          <div class="roomCol">
+          <div class="roomCol"
+               [attr.data-room-id]="room.id"
+               (mousedown)="onGridMouseDown($event, room.id)">
+            <!-- Show selection highlight only in the active room -->
+            @if (isSelecting && selectionRoomId === room.id) {
+              <div class="selection"
+                   [ngStyle]="selectionStyle()"></div>
+            }
+
             @for (r of reservationsForRoom(room.id); track r.reservationId) {
               <div
                 class="block"

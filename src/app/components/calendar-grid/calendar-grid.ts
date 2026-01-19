@@ -9,14 +9,14 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { catchError, finalize, map, of } from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {catchError, finalize, map, of} from 'rxjs';
 
-import { ReservationBlock } from '../../core/models/reservation-block';
-import { RoomDto } from '../../core/models/room.dto';
-import { CalendarApiService } from '../../core/services/calendar-api';
-import { RoomApiService } from '../../core/services/room-api';
-import { toReservationBlock } from '../../core/mappers/calendar.mapper';
+import {ReservationBlock} from '../../core/models/reservation-block';
+import {RoomDto} from '../../core/models/room.dto';
+import {CalendarApiService} from '../../core/services/calendar-api';
+import {RoomApiService} from '../../core/services/room-api';
+import {toReservationBlock} from '../../core/mappers/calendar.mapper';
 
 @Component({
   standalone: true,
@@ -35,6 +35,13 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
   isLoading = false;
   errorMsg: string | null = null;
+
+  isSelecting = false;
+  selectionRoomId: number | null = null;
+  selectionAnchorSlot = 0;
+
+  selectionStartSlot = 0;
+  selectionEndSlot = 0;
 
   rooms: RoomDto[] = [];
   allReservations: ReservationBlock[] = [];
@@ -78,6 +85,180 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
       fn();
       requestAnimationFrame(fn);
     });
+  }
+
+
+  get totalSlots(): number {
+    return this.times.length;
+  }
+
+  private clamp(n: number, min: number, max: number) {
+    return Math.max(min, Math.min(n, max));
+  }
+
+  private yToSlotIndex(y: number): number {
+    const raw = Math.floor(y / this.slotPx);
+    return this.clamp(raw, 0, this.totalSlots - 1);
+  }
+
+  private slotToHHmm(slot: number): string {
+    const totalMin = slot * this.slotMinutes;
+    const h = this.startHour + Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+
+  private buildLocalDateTime(date: string, hhmm: string): string {
+    return `${date}T${hhmm}:00`;
+  }
+
+  onGridMouseDown(ev: MouseEvent, roomId: number) {
+    // Ignore selection when clicking on an existing reservation block
+    const target = ev.target as HTMLElement;
+    if (target.closest('.block')) {
+      return;
+    }
+
+    ev.preventDefault();
+
+    const col = (ev.currentTarget as HTMLElement);
+    const rect = col.getBoundingClientRect();
+    const y = ev.clientY - rect.top;
+
+    const slot = this.yToSlotIndex(y);
+
+    this.isSelecting = true;
+    this.selectionRoomId = roomId;
+    this.selectionAnchorSlot = slot;
+    this.selectionStartSlot = slot;
+    this.selectionEndSlot = slot + 1; // end exclusive (minimum 1 slot)
+
+    window.addEventListener('mousemove', this.onWindowMouseMove);
+    window.addEventListener('mouseup', this.onWindowMouseUp);
+  }
+
+  private blockToSlotRange(r: ReservationBlock): { start: number; end: number } {
+    const startMin = this.minutesFromGridStart(r.startTime);
+    const endMin = this.minutesFromGridStart(r.endTime);
+
+    const start = Math.floor(startMin / this.slotMinutes);
+    const end = Math.ceil(endMin / this.slotMinutes); // exclusive
+
+    return {
+      start: this.clamp(start, 0, this.totalSlots),
+      end: this.clamp(end, 0, this.totalSlots),
+    };
+  }
+
+  private clampSelectionToFreeSpace(
+    roomId: number,
+    anchor: number,
+    cursor: number
+  ): { start: number; end: number } {
+    const blocks = this.reservationsForRoom(roomId)
+      .map((r) => this.blockToSlotRange(r))
+      .filter((b) => b.end > b.start);
+
+    const goingDown = cursor >= anchor;
+
+    if (goingDown) {
+      // desired: [anchor, cursor+1)
+      let end = Math.min(this.totalSlots, cursor + 1);
+
+      // find nearest block start that intersects selection
+      const cut = blocks
+        .filter((b) => b.start < end && b.end > anchor) // overlap with [anchor, end)
+        .map((b) => b.start)
+        .reduce((min, v) => Math.min(min, v), Infinity);
+
+      if (cut !== Infinity) {
+        end = Math.max(anchor + 1, cut); // min 1 slot
+      }
+
+      return { start: anchor, end };
+    } else {
+      // desired: [cursor, anchor+1)
+      const end = Math.min(this.totalSlots, anchor + 1);
+      let start = Math.max(0, cursor);
+
+      // find nearest block end (the barrier when dragging up)
+      const cut = blocks
+        .filter((b) => b.start < end && b.end > start) // overlap with [start, end)
+        .map((b) => b.end)
+        .reduce((max, v) => Math.max(max, v), -Infinity);
+
+      if (cut !== -Infinity) {
+        start = Math.min(anchor, cut);
+      }
+
+      // ensure at least 1 slot
+      if (end - start < 1) start = end - 1;
+
+      return { start, end };
+    }
+  }
+
+
+  private onWindowMouseMove = (ev: MouseEvent) => {
+    if (!this.isSelecting || this.selectionRoomId == null) return;
+
+    // Find the active column in the DOM
+    const activeCol = document.querySelector(
+      `.roomCol[data-room-id="${this.selectionRoomId}"]`
+    ) as HTMLElement | null;
+    if (!activeCol) return;
+
+    const rect = activeCol.getBoundingClientRect();
+    const y = ev.clientY - rect.top;
+
+    const slot = this.yToSlotIndex(y);
+
+    const roomId = this.selectionRoomId;
+    const anchor = this.selectionAnchorSlot;
+    const { start, end } = this.clampSelectionToFreeSpace(roomId, anchor, slot);
+
+    this.selectionStartSlot = start;
+    this.selectionEndSlot = end; // end is exclusive
+  };
+
+
+  private onWindowMouseUp = (_ev: MouseEvent) => {
+    if (!this.isSelecting) return;
+
+    this.isSelecting = false;
+
+    window.removeEventListener('mousemove', this.onWindowMouseMove);
+    window.removeEventListener('mouseup', this.onWindowMouseUp);
+
+    const date = this.selectedDate;
+    const startHHmm = this.slotToHHmm(this.selectionStartSlot);
+    const endHHmm = this.slotToHHmm(this.selectionEndSlot);
+
+    const startIso = this.buildLocalDateTime(date, startHHmm);
+    const endIso = this.buildLocalDateTime(date, endHHmm);
+
+    const startLdt = `${date}T${startHHmm}:00`;
+    const endLdt = `${date}T${endHHmm}:00`;
+
+    console.log(
+      `[CalendarGrid] Selected time range: ${startLdt} -> ${endLdt} (roomId=${this.selectionRoomId})`
+    );
+
+
+    // TODO  this.openReserveDialog({ startLdt, endLdt, date, roomId: this.selectionRoomId });
+
+    this.selectionRoomId = null;
+  };
+
+  selectionStyle(): { [k: string]: string } {
+    const inset = 3;
+    const top = this.selectionStartSlot * this.slotPx + inset;
+    const height = (this.selectionEndSlot - this.selectionStartSlot) * this.slotPx - inset * 2;
+
+    return {
+      top: `${top}px`,
+      height: `${Math.max(this.slotPx - 6, height)}px`,
+    };
   }
 
   get slotsCss(): string {

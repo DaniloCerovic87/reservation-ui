@@ -162,6 +162,7 @@
 /* NOTE:
    Same border → inset shadow trick as in header to avoid phantom overflow */
 .roomCol {
+  cursor: cell;
   position: relative;
   z-index: 1;
   border-left: 0;
@@ -180,9 +181,13 @@
   );
 }
 
+.roomCol:active { cursor: grabbing; }
+
 /* RESERVATION BLOCKS */
 .block {
-  position: absolute;
+  position: absolute; // needed for top/height positioning
+  z-index: 3;         // above .selection
+
   left: 10px;
   right: 10px;
   border-radius: 14px;
@@ -193,8 +198,6 @@
   box-sizing: border-box;
   overflow: hidden;
   cursor: pointer;
-
-  z-index: 2;
 }
 
 .block__title {
@@ -212,6 +215,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* DRAG SELECTION OVERLAY (always under reservation blocks) */
+.selection {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 10px;
+  border: 1px dashed var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  pointer-events: none;
+
+  z-index: 2; // below .block
 }
 
 /* STATUS COLORS */

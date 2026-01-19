@@ -206,7 +206,9 @@
   );
 }
 
-.roomCol:active { cursor: grabbing; }
+.selecting .roomCol {
+  cursor: grabbing; /* when keeping left click and pulling */
+}
 
 /* RESERVATION BLOCKS */
 .block {

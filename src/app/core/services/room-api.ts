@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {RoomDto} from '../models/room.dto';
 
@@ -13,5 +13,10 @@ export class RoomApiService {
 
   getAllRooms(): Observable<RoomDto[]> {
     return this.http.get<RoomDto[]>(this.baseUrl);
+  }
+
+  getAvailableRooms(startTime: string, endTime: string) {
+    const params = new HttpParams().set('startTime', startTime).set('endTime', endTime);
+    return this.http.get<RoomDto[]>('/api/rooms/available', { params });
   }
 }

@@ -9,14 +9,16 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {catchError, finalize, map, of} from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { catchError, finalize, map, of } from 'rxjs';
 
-import {ReservationBlock} from '../../core/models/reservation-block';
-import {RoomDto} from '../../core/models/room.dto';
-import {CalendarApiService} from '../../core/services/calendar-api';
-import {RoomApiService} from '../../core/services/room-api';
-import {toReservationBlock} from '../../core/mappers/calendar.mapper';
+import { ReservationBlock } from '../../core/models/reservation-block';
+import { RoomDto } from '../../core/models/room.dto';
+import { CalendarApiService } from '../../core/services/calendar-api';
+import { RoomApiService } from '../../core/services/room-api';
+import { toReservationBlock } from '../../core/mappers/calendar.mapper';
+import { MatDialog } from '@angular/material/dialog';
+import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
 
 @Component({
   standalone: true,
@@ -57,7 +59,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   constructor(
     private calendarApi: CalendarApiService,
     private roomApi: RoomApiService,
-    private zone: NgZone
+    private zone: NgZone,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -105,7 +108,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const totalMin = slot * this.slotMinutes;
     const h = this.startHour + Math.floor(totalMin / 60);
     const m = totalMin % 60;
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
   private buildLocalDateTime(date: string, hhmm: string): string {
@@ -113,6 +116,10 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   }
 
   onGridMouseDown(ev: MouseEvent, roomId: number) {
+    if (ev.button !== 0) {
+      return;
+    } // clicks: 0=left, 1=middle, 2=right
+
     // Ignore selection when clicking on an existing reservation block
     const target = ev.target as HTMLElement;
     if (target.closest('.block')) {
@@ -121,7 +128,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
     ev.preventDefault();
 
-    const col = (ev.currentTarget as HTMLElement);
+    const col = ev.currentTarget as HTMLElement;
     const rect = col.getBoundingClientRect();
     const y = ev.clientY - rect.top;
 
@@ -162,28 +169,24 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const goingDown = cursor >= anchor;
 
     if (goingDown) {
-      // desired: [anchor, cursor+1)
       let end = Math.min(this.totalSlots, cursor + 1);
 
-      // find nearest block start that intersects selection
       const cut = blocks
-        .filter((b) => b.start < end && b.end > anchor) // overlap with [anchor, end)
+        .filter((b) => b.start < end && b.end > anchor)
         .map((b) => b.start)
         .reduce((min, v) => Math.min(min, v), Infinity);
 
       if (cut !== Infinity) {
-        end = Math.max(anchor + 1, cut); // min 1 slot
+        end = Math.max(anchor + 1, cut);
       }
 
       return { start: anchor, end };
     } else {
-      // desired: [cursor, anchor+1)
       const end = Math.min(this.totalSlots, anchor + 1);
       let start = Math.max(0, cursor);
 
-      // find nearest block end (the barrier when dragging up)
       const cut = blocks
-        .filter((b) => b.start < end && b.end > start) // overlap with [start, end)
+        .filter((b) => b.start < end && b.end > start)
         .map((b) => b.end)
         .reduce((max, v) => Math.max(max, v), -Infinity);
 
@@ -191,18 +194,15 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         start = Math.min(anchor, cut);
       }
 
-      // ensure at least 1 slot
       if (end - start < 1) start = end - 1;
 
       return { start, end };
     }
   }
 
-
   private onWindowMouseMove = (ev: MouseEvent) => {
     if (!this.isSelecting || this.selectionRoomId == null) return;
 
-    // Find the active column in the DOM
     const activeCol = document.querySelector(
       `.roomCol[data-room-id="${this.selectionRoomId}"]`
     ) as HTMLElement | null;
@@ -221,7 +221,6 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     this.selectionEndSlot = end; // end is exclusive
   };
 
-
   private onWindowMouseUp = (_ev: MouseEvent) => {
     if (!this.isSelecting) return;
 
@@ -234,18 +233,27 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const startHHmm = this.slotToHHmm(this.selectionStartSlot);
     const endHHmm = this.slotToHHmm(this.selectionEndSlot);
 
-    const startIso = this.buildLocalDateTime(date, startHHmm);
-    const endIso = this.buildLocalDateTime(date, endHHmm);
+    const startLdt = this.buildLocalDateTime(date, startHHmm);
+    const endLdt = this.buildLocalDateTime(date, endHHmm);
 
-    const startLdt = `${date}T${startHHmm}:00`;
-    const endLdt = `${date}T${endHHmm}:00`;
-
-    console.log(
-      `[CalendarGrid] Selected time range: ${startLdt} -> ${endLdt} (roomId=${this.selectionRoomId})`
-    );
-
-
-    // TODO  this.openReserveDialog({ startLdt, endLdt, date, roomId: this.selectionRoomId });
+    this.dialog
+      .open(ReserveRoomsDialogComponent, {
+        width: '720px',
+        maxWidth: '92vw',
+        panelClass: 'reserveRoomsDialogPanel',
+        autoFocus: false,
+        data: {
+          startTime: startLdt,
+          endTime: endLdt,
+          initialRoomId: this.selectionRoomId ?? undefined,
+        },
+      })
+      .afterClosed()
+      .subscribe((res: { saved: any }) => {
+        if (res?.saved) {
+          this.loadDay(this.selectedDate);
+        }
+      });
 
     this.selectionRoomId = null;
   };
@@ -253,7 +261,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   selectionStyle(): { [k: string]: string } {
     const inset = 3;
     const top = this.selectionStartSlot * this.slotPx + inset;
-    const height = (this.selectionEndSlot - this.selectionStartSlot) * this.slotPx - inset * 2;
+    const height =
+      (this.selectionEndSlot - this.selectionStartSlot) * this.slotPx - inset * 2;
 
     return {
       top: `${top}px`,
@@ -278,8 +287,9 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   loadRooms() {
     this.isLoadingRooms = true;
 
-    this.roomApi.getAllRooms()
-      .pipe(finalize(() => this.isLoadingRooms = false))
+    this.roomApi
+      .getAllRooms()
+      .pipe(finalize(() => (this.isLoadingRooms = false)))
       .subscribe((rooms) => {
         this.rooms = rooms;
         this.runAfterRender(() => this.updateHorizontalScrollClass());
@@ -315,7 +325,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const body = this.bodyScroll?.nativeElement;
     if (!body) return;
 
-    const hasXScroll = (body.scrollWidth - body.clientWidth) > 2;
+    const hasXScroll = body.scrollWidth - body.clientWidth > 2;
 
     body.classList.toggle('has-x-scroll', hasXScroll);
 
@@ -345,7 +355,10 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const endMin = this.minutesFromGridStart(r.endTime);
 
     const startSlots = Math.round(startMin / this.slotMinutes);
-    const durationSlots = Math.max(1, Math.round((endMin - startMin) / this.slotMinutes));
+    const durationSlots = Math.max(
+      1,
+      Math.round((endMin - startMin) / this.slotMinutes)
+    );
 
     const top = startSlots * this.slotPx;
 
@@ -361,7 +374,9 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   private minutesFromGridStart(iso: string): number {
     const d = new Date(iso);
     const day = iso.substring(0, 10);
-    const gridStart = new Date(`${day}T${String(this.startHour).padStart(2, '0')}:00:00`);
+    const gridStart = new Date(
+      `${day}T${String(this.startHour).padStart(2, '0')}:00:00`
+    );
 
     let diff = Math.floor((d.getTime() - gridStart.getTime()) / 60000);
     const max = (this.endHour - this.startHour) * 60;

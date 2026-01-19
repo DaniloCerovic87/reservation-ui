@@ -1,0 +1,86 @@
+<h2 mat-dialog-title class="title">
+  New reservation
+  <span class="subtitle">{{ rangeLabel }}</span>
+</h2>
+
+<div mat-dialog-content class="content">
+  @if (loading) {
+    <div class="info loading">Loading available rooms...</div>
+  }
+
+  @if (errorMsg) {
+    <div class="info error">{{ errorMsg }}</div>
+  }
+
+  @if (!loading) {
+    <div class="roomsBox">
+      <div class="roomsHeader">
+        <span class="roomsTitle">Choose rooms</span>
+
+        @if (rooms.length) {
+          <span class="roomsHint">{{ selected.size }} selected</span>
+        }
+      </div>
+
+      @if (rooms.length === 0) {
+        <div class="empty">
+          No available rooms for this time range.
+        </div>
+      } @else {
+        @for (r of rooms; track r.id) {
+          <div class="roomRow">
+            <mat-checkbox
+              [checked]="selected.has(r.id)"
+              (change)="toggle(r.id, $event.checked)"
+            >
+              <div class="roomLine1">
+                <span class="roomName">{{ r.name }}</span>
+                <span class="pill">{{ r.roomType }}</span>
+              </div>
+              <div class="roomLine2">{{ roomSpec(r) }}</div>
+            </mat-checkbox>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Reservation name</mat-label>
+      <input matInput formControlName="reservationName" />
+      @if (isInvalid('reservationName') && hasError('reservationName','required')) {
+        <mat-error>Name is required.</mat-error>
+      }
+      @if (isInvalid('reservationName') && hasError('reservationName','minlength')) {
+        <mat-error>Min 2 characters.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Reservation type</mat-label>
+      <mat-select formControlName="reservationType">
+        <mat-option value="BASIC">BASIC</mat-option>
+        <mat-option value="MASTER">MASTER</mat-option>
+        <mat-option value="SPECIALIST">SPECIALIST</mat-option>
+        <mat-option value="DOCTORAL">DOCTORAL</mat-option>
+      </mat-select>
+
+      @if (isInvalid('reservationType')) {
+        <mat-error>Type is required.</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</div>
+
+<div mat-dialog-actions class="actions">
+  <button mat-button (click)="close()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="save()"
+    [disabled]="saving || !canSave"
+  >
+    Save
+  </button>
+</div>

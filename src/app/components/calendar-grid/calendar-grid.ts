@@ -34,6 +34,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   @Input() myEmployeeId!: number;
 
   isLoading = false;
+  isLoadingRooms = false;
   errorMsg: string | null = null;
 
   isSelecting = false;
@@ -86,7 +87,6 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
       requestAnimationFrame(fn);
     });
   }
-
 
   get totalSlots(): number {
     return this.times.length;
@@ -276,10 +276,14 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   }
 
   loadRooms() {
-    this.roomApi.getAllRooms().subscribe((rooms) => {
-      this.rooms = rooms;
-      this.runAfterRender(() => this.updateHorizontalScrollClass());
-    });
+    this.isLoadingRooms = true;
+
+    this.roomApi.getAllRooms()
+      .pipe(finalize(() => this.isLoadingRooms = false))
+      .subscribe((rooms) => {
+        this.rooms = rooms;
+        this.runAfterRender(() => this.updateHorizontalScrollClass());
+      });
   }
 
   loadDay(date: string) {

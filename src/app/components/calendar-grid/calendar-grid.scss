@@ -52,6 +52,31 @@
   min-height: 0;
 }
 
+.cal__loadingOverlay {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: all; // blokira klikove dok se učitava
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(0,0,0,0.15);
+  border-top-color: rgba(0,0,0,0.55);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* HEADER */
 .cal__header {
   display: grid;
@@ -228,6 +253,11 @@
   pointer-events: none;
 
   z-index: 2; // below .block
+}
+
+.calWrap.disabled {
+  opacity: .6;
+  pointer-events: none;
 }
 
 /* STATUS COLORS */

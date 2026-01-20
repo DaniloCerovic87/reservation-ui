@@ -1,0 +1,24 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import {Observable, tap} from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class ReservationApiService {
+  private readonly baseUrl = '/api/reservations';
+
+  constructor(private http: HttpClient) {}
+
+  busyRoomIds(startTime: string, endTime: string): Observable<number[]> {
+    const params = new HttpParams()
+      .set('startTime', startTime)
+      .set('endTime', endTime);
+
+    return this.http.get<number[]>(`${this.baseUrl}/busy-room-ids`, { params }).pipe(
+      tap({
+        next: (res) => console.log('busy-room-ids response:', res),
+        error: (err) => console.error('busy-room-ids error:', err),
+      })
+    );
+  }
+
+}

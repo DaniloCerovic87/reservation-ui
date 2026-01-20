@@ -20,11 +20,13 @@ import { RoomApiService } from '../../../core/services/room-api';
 import { CalendarApiService } from '../../../core/services/calendar-api';
 import { RoomDto } from '../../../core/models/room.dto';
 import { BulkReserveRequest } from '../../../core/models/bulk-reserve.request';
+import {ReservationApiService} from '../../../core/services/reservation-api';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
   endTime: string;
   initialRoomId?: number;
+  roomsSnapshot: RoomDto[];
 }
 
 export interface ReserveRoomsDialogResult {
@@ -69,6 +71,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<ReserveRoomsDialogComponent, ReserveRoomsDialogResult>,
     private readonly roomApi: RoomApiService,
     private readonly calendarApi: CalendarApiService,
+    private readonly reservationApi: ReservationApiService,
     private readonly fb: NonNullableFormBuilder
   ) {
     this.form = this.fb.group({
@@ -79,27 +82,35 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('DIALOG INIT', this.data);
+    this.loadAvailableRoomsFromSnapshot();
+  }
 
-    this.loading = false;
+  private loadAvailableRoomsFromSnapshot() {
+    this.loading = true;
     this.errorMsg = null;
 
-    this.rooms = [
-      { id: 1, name: 'Computer Lab 1', roomType: 'LAB' } as any,
-      { id: 2, name: 'Computer Lab 4', roomType: 'LAB' } as any,
-      { id: 3, name: 'Meeting Room A', roomType: 'MEETING' } as any,
-      { id: 4, name: 'Computer Lab 1', roomType: 'LAB' } as any,
-      { id: 5, name: 'Computer Lab 4', roomType: 'LAB' } as any,
-      { id: 6, name: 'Meeting Room A', roomType: 'MEETING' } as any,
-      { id: 7, name: 'Computer Lab 1', roomType: 'LAB' } as any,
-      { id: 8, name: 'Computer Lab 4', roomType: 'LAB' } as any,
-      { id: 9, name: 'Meeting Room A', roomType: 'MEETING' } as any,
-      { id: 10, name: 'Computer Lab 1', roomType: 'LAB' } as any,
-      { id: 11, name: 'Computer Lab 4', roomType: 'LAB' } as any,
-      { id: 12, name: 'Meeting Room A', roomType: 'MEETING' } as any,
-    ];
+    this.reservationApi
+      .busyRoomIds(this.data.startTime, this.data.endTime)
+      .pipe(finalize(() => (this.loading = false)))
+      .subscribe({
+        next: (busyIds) => {
+          const busy = new Set<number>(busyIds);
 
-    this.selected.clear();
-    this.selected.add(2);
+          this.rooms = (this.data.roomsSnapshot ?? []).filter((r) => !busy.has(r.id));
+
+          console.log("Busy rooms", this.rooms);
+
+          // auto-select chosen room
+          if (this.data.initialRoomId && this.rooms.some((r) => r.id === this.data.initialRoomId)) {
+            this.selected.add(this.data.initialRoomId);
+          }
+        },
+        error: () => {
+          console.log("Error occurred")
+          this.errorMsg = 'Could not load availability.';
+          this.rooms = [];
+        },
+      });
   }
 
   get canSave(): boolean {

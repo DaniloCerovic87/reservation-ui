@@ -9,16 +9,16 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { catchError, finalize, map, of } from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {catchError, finalize, map, of} from 'rxjs';
 
-import { ReservationBlock } from '../../core/models/reservation-block';
-import { RoomDto } from '../../core/models/room.dto';
-import { CalendarApiService } from '../../core/services/calendar-api';
-import { RoomApiService } from '../../core/services/room-api';
-import { toReservationBlock } from '../../core/mappers/calendar.mapper';
-import { MatDialog } from '@angular/material/dialog';
-import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
+import {ReservationBlock} from '../../core/models/reservation-block';
+import {RoomDto} from '../../core/models/room.dto';
+import {CalendarApiService} from '../../core/services/calendar-api';
+import {RoomApiService} from '../../core/services/room-api';
+import {toReservationBlock} from '../../core/mappers/calendar.mapper';
+import {MatDialog} from '@angular/material/dialog';
+import {ReserveRoomsDialogComponent} from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
 
 @Component({
   standalone: true,
@@ -28,10 +28,10 @@ import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-
   styleUrls: ['./calendar-grid.scss'],
 })
 export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
-  @ViewChild('headerRooms', { static: true }) headerRooms!: ElementRef<HTMLDivElement>;
-  @ViewChild('bodyScroll', { static: true }) bodyScroll!: ElementRef<HTMLDivElement>;
+  @ViewChild('headerRooms', {static: true}) headerRooms!: ElementRef<HTMLDivElement>;
+  @ViewChild('bodyScroll', {static: true}) bodyScroll!: ElementRef<HTMLDivElement>;
 
-  @Input({ required: true }) selectedDate!: string;
+  @Input({required: true}) selectedDate!: string;
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
 
@@ -61,7 +61,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     private roomApi: RoomApiService,
     private zone: NgZone,
     private dialog: MatDialog
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadRooms();
@@ -180,7 +181,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         end = Math.max(anchor + 1, cut);
       }
 
-      return { start: anchor, end };
+      return {start: anchor, end};
     } else {
       const end = Math.min(this.totalSlots, anchor + 1);
       let start = Math.max(0, cursor);
@@ -196,7 +197,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
       if (end - start < 1) start = end - 1;
 
-      return { start, end };
+      return {start, end};
     }
   }
 
@@ -215,7 +216,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
     const roomId = this.selectionRoomId;
     const anchor = this.selectionAnchorSlot;
-    const { start, end } = this.clampSelectionToFreeSpace(roomId, anchor, slot);
+    const {start, end} = this.clampSelectionToFreeSpace(roomId, anchor, slot);
 
     this.selectionStartSlot = start;
     this.selectionEndSlot = end; // end is exclusive
@@ -246,6 +247,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
           startTime: startLdt,
           endTime: endLdt,
           initialRoomId: this.selectionRoomId ?? undefined,
+          roomsSnapshot: this.rooms,
         },
       })
       .afterClosed()
@@ -276,7 +278,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
   get times(): string[] {
     const totalSlots = ((this.endHour - this.startHour) * 60) / this.slotMinutes;
-    return Array.from({ length: totalSlots }, (_, i) => {
+    return Array.from({length: totalSlots}, (_, i) => {
       const total = i * this.slotMinutes;
       const h = this.startHour + Math.floor(total / 60);
       const m = total % 60;

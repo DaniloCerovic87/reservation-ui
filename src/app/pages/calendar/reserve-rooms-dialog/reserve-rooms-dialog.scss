@@ -138,3 +138,19 @@
   padding: 8px 24px 18px;
 }
 
+.roomLine2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.chip {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid #e6e6e6;
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+

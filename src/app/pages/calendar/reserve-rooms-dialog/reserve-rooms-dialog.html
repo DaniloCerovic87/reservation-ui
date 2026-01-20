@@ -37,7 +37,32 @@
                 <span class="roomName">{{ r.name }}</span>
                 <span class="pill">{{ r.roomType }}</span>
               </div>
-              <div class="roomLine2">{{ roomSpec(r) }}</div>
+              <div class="roomLine2">
+                @if (r.capacity != null) {
+                  <span class="chip">Seats: {{ r.capacity }}</span>
+                }
+
+                <!-- COMPUTER_ROOM -->
+                @if (r.roomType === 'Computer Room') {
+                  @if (r.numberOfComputers != null) {
+                    <span class="chip">PCs: {{ r.numberOfComputers }}</span>
+                  }
+                }
+
+                <!-- CLASSROOM -->
+                @if (r.roomType === 'Classroom') {
+                  @if (r.hasSmartBoard != null) {
+                    <span class="chip">Smartboard: {{ r.hasSmartBoard ? 'Yes' : 'No' }}</span>
+                  }
+                }
+
+                <!-- AMPHITHEATER -->
+                @if (r.roomType === 'Amphitheater') {
+                  @if (r.numberOfProjectors != null) {
+                    <span class="chip">Projectors: {{ r.numberOfProjectors }}</span>
+                  }
+                }
+              </div>
             </mat-checkbox>
           </div>
         }

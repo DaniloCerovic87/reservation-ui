@@ -9,16 +9,16 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {catchError, finalize, map, of} from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { catchError, finalize, map, of } from 'rxjs';
 
-import {ReservationBlock} from '../../core/models/reservation-block';
-import {RoomDto} from '../../core/models/room.dto';
-import {CalendarApiService} from '../../core/services/calendar-api';
-import {RoomApiService} from '../../core/services/room-api';
-import {toReservationBlock} from '../../core/mappers/calendar.mapper';
-import {MatDialog} from '@angular/material/dialog';
-import {ReserveRoomsDialogComponent} from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
+import { ReservationBlock } from '../../core/models/reservation-block';
+import { RoomDto } from '../../core/models/room.dto';
+import { CalendarApiService } from '../../core/services/calendar-api';
+import { RoomApiService } from '../../core/services/room-api';
+import { toReservationBlock } from '../../core/mappers/calendar.mapper';
+import { MatDialog } from '@angular/material/dialog';
+import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
 
 @Component({
   standalone: true,
@@ -28,10 +28,10 @@ import {ReserveRoomsDialogComponent} from '../../pages/calendar/reserve-rooms-di
   styleUrls: ['./calendar-grid.scss'],
 })
 export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
-  @ViewChild('headerRooms', {static: true}) headerRooms!: ElementRef<HTMLDivElement>;
-  @ViewChild('bodyScroll', {static: true}) bodyScroll!: ElementRef<HTMLDivElement>;
+  @ViewChild('headerRooms', { static: true }) headerRooms!: ElementRef<HTMLDivElement>;
+  @ViewChild('bodyScroll', { static: true }) bodyScroll!: ElementRef<HTMLDivElement>;
 
-  @Input({required: true}) selectedDate!: string;
+  @Input({ required: true }) selectedDate!: string;
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
 
@@ -61,8 +61,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     private roomApi: RoomApiService,
     private zone: NgZone,
     private dialog: MatDialog
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadRooms();
@@ -92,6 +91,78 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  // ===================== DATE HELPERS =====================
+
+  private selectedIso(): string {
+    return this.selectedDate;
+  }
+
+  isTodaySelected(): boolean {
+    const today = new Date();
+    const iso = this.selectedIso();
+    const d = new Date(`${iso}T00:00:00`);
+    return d.getFullYear() === today.getFullYear()
+      && d.getMonth() === today.getMonth()
+      && d.getDate() === today.getDate();
+  }
+
+  isPastDaySelected(): boolean {
+    const iso = this.selectedIso();
+    const d = new Date(`${iso}T00:00:00`);
+
+    const today = new Date();
+    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // today at 00:00
+
+    return d.getTime() < t0.getTime();
+  }
+
+  isFutureDaySelected(): boolean {
+    const iso = this.selectedIso();
+    const d = new Date(`${iso}T00:00:00`);
+
+    const today = new Date();
+    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // today at 00:00
+
+    return d.getTime() > t0.getTime();
+  }
+
+  // ===================== PAST OVERLAY =====================
+
+  get pastSlotsCss(): string {
+    // Past day: everything is disabled
+    if (this.isPastDaySelected()) return String(this.totalSlots);
+
+    // Future day: nothing is disabled
+    if (!this.isTodaySelected()) return '0';
+
+    // Today: calculate how many slots have already started
+    const now = new Date();
+    const isoDate = this.selectedIso();
+    const gridStart = new Date(
+      `${isoDate}T${String(this.startHour).padStart(2, '0')}:00:00`
+    );
+
+    const diffMin = Math.floor((now.getTime() - gridStart.getTime()) / 60000);
+
+    // Number of slots that have already started, including the currently running one
+    const slots = Math.floor(diffMin / this.slotMinutes) + 1;
+
+    return String(this.clamp(slots, 0, this.totalSlots));
+  }
+
+  isPastSlotIndex(slotIndex: number): boolean {
+    // Entire day is in the past
+    if (this.isPastDaySelected()) return true;
+
+    // Future day (not today): no past slots
+    if (!this.isTodaySelected()) return false;
+
+    // Today: slot is past if its start time is <= now
+    const hhmm = this.slotToHHmm(slotIndex);
+    const iso = this.buildLocalDateTime(this.selectedIso(), hhmm);
+    return new Date(iso).getTime() <= Date.now();
+  }
+
   get totalSlots(): number {
     return this.times.length;
   }
@@ -117,17 +188,17 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   }
 
   onGridMouseDown(ev: MouseEvent, roomId: number) {
-    if (ev.button !== 0) {
-      return;
-    } // clicks: 0=left, 1=middle, 2=right
+    if (ev.button !== 0) return;
 
-    // Ignore selection when clicking on an existing reservation block
     const target = ev.target as HTMLElement;
-    if (target.closest('.block')) {
-      return;
-    }
+    if (target.closest('.block')) return;
 
     ev.preventDefault();
+
+    // Do not allow selection on a past day
+    if (this.isPastDaySelected()) {
+      return;
+    }
 
     const col = ev.currentTarget as HTMLElement;
     const rect = col.getBoundingClientRect();
@@ -135,11 +206,16 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
     const slot = this.yToSlotIndex(y);
 
+    // Do not allow starting selection in the past (for today)
+    if (this.isPastSlotIndex(slot)) {
+      return;
+    }
+
     this.isSelecting = true;
     this.selectionRoomId = roomId;
     this.selectionAnchorSlot = slot;
     this.selectionStartSlot = slot;
-    this.selectionEndSlot = slot + 1; // end exclusive (minimum 1 slot)
+    this.selectionEndSlot = slot + 1;
 
     window.addEventListener('mousemove', this.onWindowMouseMove);
     window.addEventListener('mouseup', this.onWindowMouseUp);
@@ -181,7 +257,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         end = Math.max(anchor + 1, cut);
       }
 
-      return {start: anchor, end};
+      return { start: anchor, end };
     } else {
       const end = Math.min(this.totalSlots, anchor + 1);
       let start = Math.max(0, cursor);
@@ -197,7 +273,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
       if (end - start < 1) start = end - 1;
 
-      return {start, end};
+      return { start, end };
     }
   }
 
@@ -216,10 +292,20 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
     const roomId = this.selectionRoomId;
     const anchor = this.selectionAnchorSlot;
-    const {start, end} = this.clampSelectionToFreeSpace(roomId, anchor, slot);
+
+    // While dragging, do not allow entering past slots (for today)
+    if (this.isPastSlotIndex(slot)) {
+      const safeSlot = Math.max(anchor, Number(this.pastSlotsCss));
+      const { start, end } = this.clampSelectionToFreeSpace(roomId, anchor, safeSlot);
+      this.selectionStartSlot = start;
+      this.selectionEndSlot = end;
+      return;
+    }
+
+    const { start, end } = this.clampSelectionToFreeSpace(roomId, anchor, slot);
 
     this.selectionStartSlot = start;
-    this.selectionEndSlot = end; // end is exclusive
+    this.selectionEndSlot = end;
   };
 
   private onWindowMouseUp = (_ev: MouseEvent) => {
@@ -230,7 +316,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     window.removeEventListener('mousemove', this.onWindowMouseMove);
     window.removeEventListener('mouseup', this.onWindowMouseUp);
 
-    const date = this.selectedDate;
+    const date = this.selectedIso();
     const startHHmm = this.slotToHHmm(this.selectionStartSlot);
     const endHHmm = this.slotToHHmm(this.selectionEndSlot);
 
@@ -278,7 +364,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
   get times(): string[] {
     const totalSlots = ((this.endHour - this.startHour) * 60) / this.slotMinutes;
-    return Array.from({length: totalSlots}, (_, i) => {
+    return Array.from({ length: totalSlots }, (_, i) => {
       const total = i * this.slotMinutes;
       const h = this.startHour + Math.floor(total / 60);
       const m = total % 60;
@@ -308,7 +394,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         map((entries) => entries.map((e) => toReservationBlock(e))),
         finalize(() => (this.isLoading = false)),
         catchError(() => {
-          this.errorMsg = 'Ne mogu da učitam rezervacije.';
+          this.errorMsg = 'Unable to load reservations.';
           this.allReservations = [];
           return of([] as ReservationBlock[]);
         })
@@ -357,10 +443,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const endMin = this.minutesFromGridStart(r.endTime);
 
     const startSlots = Math.round(startMin / this.slotMinutes);
-    const durationSlots = Math.max(
-      1,
-      Math.round((endMin - startMin) / this.slotMinutes)
-    );
+    const durationSlots = Math.max(1, Math.round((endMin - startMin) / this.slotMinutes));
 
     const top = startSlots * this.slotPx;
 

@@ -15,15 +15,33 @@
   justify-content: center;
   align-items: flex-start;
 
-  /* No scrolling here (horizontal scroll lives in body + header) */
   overflow: hidden;
+  position: relative;
 }
 
 .calWrap.has-x-scroll {
   justify-content: flex-start;
 }
 
-/* Card: content width (up to the last room column) */
+/* ===== GRID MESSAGE (past selection warning) ===== */
+/* (možeš obrisati ceo blok ako više ne koristiš gridMsg u HTML-u) */
+.gridMsg {
+  position: sticky;
+  top: 8px;
+  z-index: 60;
+
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+
+  border-radius: 10px;
+  border: 1px solid #f3c1c6;
+  background: #fff5f6;
+  color: #8a1020;
+
+  font-size: 13px;
+}
+
+/* Card */
 .cal {
   --time-w: 92px;
   --col-w: 240px;
@@ -32,9 +50,11 @@
   --line: #f1f1f1;
   --line-strong: #e8e8e8;
 
-  /* Fallback if --slots is not provided from the component */
   --slots: 48;
   --grid-h: calc(var(--slot-h) * var(--slots));
+
+  /* how many past slots to gray out (set from TS) */
+  --past-slots: 0;
 
   border: 1px solid #e6e6e6;
   border-radius: 14px;
@@ -52,6 +72,7 @@
   min-height: 0;
 }
 
+/* ===== LOADING OVERLAY ===== */
 .cal__loadingOverlay {
   position: absolute;
   inset: 0;
@@ -61,7 +82,7 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
-  pointer-events: all; // blokira klikove dok se učitava
+  pointer-events: all;
 }
 
 .spinner {
@@ -77,7 +98,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .cal__header {
   display: grid;
   grid-template-columns: var(--time-w) minmax(0, 1fr);
@@ -89,8 +110,6 @@
   border-right: 1px solid var(--line-strong);
 }
 
-/* Header second column:
-   must not create its own scrollbar (it is synced via scrollLeft) */
 .cal__headerRooms {
   overflow: hidden;
   min-width: 0;
@@ -102,12 +121,8 @@
   grid-auto-columns: var(--col-w);
 }
 
-/* NOTE:
-   border-left caused 1–N px horizontal overflow due to subpixel rounding.
-   We draw the vertical line using inset box-shadow instead (no layout impact). */
 .cal__roomHeader {
   padding: 10px 12px;
-  border-left: 0;
   box-shadow: inset 1px 0 0 var(--line-strong);
   min-width: var(--col-w);
 }
@@ -123,9 +138,7 @@
   margin-top: 2px;
 }
 
-/* BODY:
-   vertical scrolling + horizontal scrolling
-   (this is the only horizontal scrollbar in the calendar) */
+/* ===== BODY ===== */
 .cal__body {
   display: grid;
   grid-template-columns: var(--time-w) minmax(0, 1fr);
@@ -138,15 +151,14 @@
   overflow-y: auto;
   overflow-x: auto;
 
-  /* Keeps layout width stable when vertical scrollbar appears/disappears */
   scrollbar-gutter: stable;
 }
 
-/* LEFT TIME COLUMN (sticky) */
+/* LEFT TIME COLUMN */
 .cal__timeCol {
   position: sticky;
   left: 0;
-  z-index: 3;
+  z-index: 4;
   background: #fff;
   border-right: 1px solid var(--line-strong);
 
@@ -175,7 +187,7 @@
   }
 }
 
-/* ROOMS GRID */
+/* ===== ROOMS GRID ===== */
 .cal__rooms {
   position: relative;
   display: grid;
@@ -184,19 +196,15 @@
   min-width: 0;
 }
 
-/* NOTE:
-   Same border → inset shadow trick as in header to avoid phantom overflow */
+/* ROOM COLUMN */
 .roomCol {
   cursor: cell;
   position: relative;
   z-index: 1;
-  border-left: 0;
   box-shadow: inset 1px 0 0 var(--line-strong);
   min-width: var(--col-w);
-
   min-height: var(--grid-h);
 
-  /* Time grid lines per column (applies to all rooms) */
   background-image: repeating-linear-gradient(
       to bottom,
       transparent,
@@ -206,14 +214,37 @@
   );
 }
 
-.selecting .roomCol {
-  cursor: grabbing; /* when keeping left click and pulling */
+/* ===== PAST OVERLAY (today + past day) =====
+   Promene:
+   - tamnija siva (0.18)
+   - hvata klikove u sivoj zoni (pointer-events: auto)
+   - cursor not-allowed u sivoj zoni */
+.roomCol.today::before,
+.roomCol.past::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: calc(var(--past-slots) * var(--slot-h));
+  background: rgba(0, 0, 0, 0.18);
+
+  pointer-events: auto;
+  cursor: not-allowed;
+
+  z-index: 2;
 }
 
-/* RESERVATION BLOCKS */
+/* when dragging */
+.selecting .roomCol {
+  cursor: grabbing;
+}
+
+/* ===== RESERVATION BLOCKS ===== */
 .block {
-  position: absolute; // needed for top/height positioning
-  z-index: 3;         // above .selection
+  position: absolute;
+  z-index: 3;
 
   left: 10px;
   right: 10px;
@@ -244,7 +275,7 @@
   text-overflow: ellipsis;
 }
 
-/* DRAG SELECTION OVERLAY (always under reservation blocks) */
+/* ===== DRAG SELECTION ===== */
 .selection {
   position: absolute;
   left: 6px;
@@ -254,15 +285,16 @@
   background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
   pointer-events: none;
 
-  z-index: 2; // below .block
+  z-index: 4;
 }
 
+/* ===== DISABLED GRID ===== */
 .calWrap.disabled {
   opacity: .6;
   pointer-events: none;
 }
 
-/* STATUS COLORS */
+/* ===== STATUS COLORS ===== */
 .c-pending-basic { background: rgba(25, 118, 210, 0.12); }
 .c-pending-master { background: rgba(25, 118, 210, 0.26); }
 .c-pending-specialist { background: rgba(25, 118, 210, 0.4); }

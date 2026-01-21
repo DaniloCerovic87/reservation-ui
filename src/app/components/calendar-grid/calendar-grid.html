@@ -1,5 +1,5 @@
 <div class="calWrap" [class.selecting]="isSelecting">
-  <div class="cal" [ngStyle]="{ '--slots': slotsCss }">
+  <div class="cal" [ngStyle]="{ '--slots': slotsCss, '--past-slots': pastSlotsCss }">
     <div class="cal__header">
       <div class="cal__corner"></div>
 
@@ -27,6 +27,8 @@
       <div class="cal__rooms">
         @for (room of rooms; track room.id) {
           <div class="roomCol"
+               [class.today]="isTodaySelected()"
+               [class.past]="isPastDaySelected()"
                [attr.data-room-id]="room.id"
                (mousedown)="onGridMouseDown($event, room.id)">
             <!-- Show selection highlight only in the active room -->

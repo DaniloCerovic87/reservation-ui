@@ -24,7 +24,11 @@
 
       @if (rooms.length === 0) {
         <div class="empty">
-          No available rooms for this time range.
+          @if (availabilityFailed) {
+            Availability is currently unavailable. Please try again later.
+          } @else {
+            No available rooms for this time range.
+          }
         </div>
       } @else {
         @for (r of rooms; track r.id) {

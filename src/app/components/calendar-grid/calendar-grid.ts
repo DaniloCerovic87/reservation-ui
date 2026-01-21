@@ -5,6 +5,7 @@ import {
   Input,
   NgZone,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild,
@@ -19,6 +20,7 @@ import { RoomApiService } from '../../core/services/room-api';
 import { toReservationBlock } from '../../core/mappers/calendar.mapper';
 import { MatDialog } from '@angular/material/dialog';
 import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
+import { ReservationApiService } from '../../core/services/reservation-api';
 
 @Component({
   standalone: true,
@@ -27,7 +29,7 @@ import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-
   templateUrl: './calendar-grid.html',
   styleUrls: ['./calendar-grid.scss'],
 })
-export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
+export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('headerRooms', { static: true }) headerRooms!: ElementRef<HTMLDivElement>;
   @ViewChild('bodyScroll', { static: true }) bodyScroll!: ElementRef<HTMLDivElement>;
 
@@ -35,8 +37,9 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
 
-  isLoading = false;
+  isLoading = false;        // day loading
   isLoadingRooms = false;
+  isCheckingAvailability = false; // before opening modal
   errorMsg: string | null = null;
 
   isSelecting = false;
@@ -59,6 +62,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   constructor(
     private calendarApi: CalendarApiService,
     private roomApi: RoomApiService,
+    private reservationApi: ReservationApiService, // ✅ new
     private zone: NgZone,
     private dialog: MatDialog
   ) {}
@@ -70,12 +74,18 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedDate']?.currentValue && !changes['selectedDate']?.firstChange) {
+      // ✅ avoid “stuck selection” when changing date
+      this.resetSelection();
       this.loadDay(this.selectedDate);
     }
   }
 
   ngAfterViewInit(): void {
     this.runAfterRender(() => this.updateHorizontalScrollClass());
+  }
+
+  ngOnDestroy(): void {
+    this.resetSelection();
   }
 
   private runAfterRender(fn: () => void) {
@@ -91,6 +101,18 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  // ✅ single place to cleanup selection + global listeners
+  private resetSelection() {
+    this.isSelecting = false;
+    this.selectionRoomId = null;
+    this.selectionAnchorSlot = 0;
+    this.selectionStartSlot = 0;
+    this.selectionEndSlot = 0;
+
+    window.removeEventListener('mousemove', this.onWindowMouseMove);
+    window.removeEventListener('mouseup', this.onWindowMouseUp);
+  }
+
   // ===================== DATE HELPERS =====================
 
   private selectedIso(): string {
@@ -101,9 +123,11 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const today = new Date();
     const iso = this.selectedIso();
     const d = new Date(`${iso}T00:00:00`);
-    return d.getFullYear() === today.getFullYear()
-      && d.getMonth() === today.getMonth()
-      && d.getDate() === today.getDate();
+    return (
+      d.getFullYear() === today.getFullYear() &&
+      d.getMonth() === today.getMonth() &&
+      d.getDate() === today.getDate()
+    );
   }
 
   isPastDaySelected(): boolean {
@@ -114,16 +138,6 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // today at 00:00
 
     return d.getTime() < t0.getTime();
-  }
-
-  isFutureDaySelected(): boolean {
-    const iso = this.selectedIso();
-    const d = new Date(`${iso}T00:00:00`);
-
-    const today = new Date();
-    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // today at 00:00
-
-    return d.getTime() > t0.getTime();
   }
 
   // ===================== PAST OVERLAY =====================
@@ -138,9 +152,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     // Today: calculate how many slots have already started
     const now = new Date();
     const isoDate = this.selectedIso();
-    const gridStart = new Date(
-      `${isoDate}T${String(this.startHour).padStart(2, '0')}:00:00`
-    );
+    const gridStart = new Date(`${isoDate}T${String(this.startHour).padStart(2, '0')}:00:00`);
 
     const diffMin = Math.floor((now.getTime() - gridStart.getTime()) / 60000);
 
@@ -196,9 +208,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     ev.preventDefault();
 
     // Do not allow selection on a past day
-    if (this.isPastDaySelected()) {
-      return;
-    }
+    if (this.isPastDaySelected()) return;
 
     const col = ev.currentTarget as HTMLElement;
     const rect = col.getBoundingClientRect();
@@ -207,9 +217,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     const slot = this.yToSlotIndex(y);
 
     // Do not allow starting selection in the past (for today)
-    if (this.isPastSlotIndex(slot)) {
-      return;
-    }
+    if (this.isPastSlotIndex(slot)) return;
 
     this.isSelecting = true;
     this.selectionRoomId = roomId;
@@ -234,11 +242,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     };
   }
 
-  private clampSelectionToFreeSpace(
-    roomId: number,
-    anchor: number,
-    cursor: number
-  ): { start: number; end: number } {
+  private clampSelectionToFreeSpace(roomId: number, anchor: number, cursor: number): { start: number; end: number } {
     const blocks = this.reservationsForRoom(roomId)
       .map((r) => this.blockToSlotRange(r))
       .filter((b) => b.end > b.start);
@@ -253,9 +257,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         .map((b) => b.start)
         .reduce((min, v) => Math.min(min, v), Infinity);
 
-      if (cut !== Infinity) {
-        end = Math.max(anchor + 1, cut);
-      }
+      if (cut !== Infinity) end = Math.max(anchor + 1, cut);
 
       return { start: anchor, end };
     } else {
@@ -267,9 +269,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
         .map((b) => b.end)
         .reduce((max, v) => Math.max(max, v), -Infinity);
 
-      if (cut !== -Infinity) {
-        start = Math.min(anchor, cut);
-      }
+      if (cut !== -Infinity) start = Math.min(anchor, cut);
 
       if (end - start < 1) start = end - 1;
 
@@ -308,49 +308,91 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
     this.selectionEndSlot = end;
   };
 
+  // MODAL OPEN AFTER API CALL
   private onWindowMouseUp = (_ev: MouseEvent) => {
     if (!this.isSelecting) return;
 
-    this.isSelecting = false;
+    // capture selection before cleanup
+    const roomId = this.selectionRoomId;
+    const startSlot = this.selectionStartSlot;
+    const endSlot = this.selectionEndSlot;
 
-    window.removeEventListener('mousemove', this.onWindowMouseMove);
-    window.removeEventListener('mouseup', this.onWindowMouseUp);
+    // cleanup selection immediately (prevents “stuck” highlight)
+    this.resetSelection();
 
     const date = this.selectedIso();
-    const startHHmm = this.slotToHHmm(this.selectionStartSlot);
-    const endHHmm = this.slotToHHmm(this.selectionEndSlot);
+    const startHHmm = this.slotToHHmm(startSlot);
+    const endHHmm = this.slotToHHmm(endSlot);
 
     const startLdt = this.buildLocalDateTime(date, startHHmm);
     const endLdt = this.buildLocalDateTime(date, endHHmm);
 
-    this.dialog
-      .open(ReserveRoomsDialogComponent, {
-        width: '720px',
-        maxWidth: '92vw',
-        panelClass: 'reserveRoomsDialogPanel',
-        autoFocus: false,
-        data: {
-          startTime: startLdt,
-          endTime: endLdt,
-          initialRoomId: this.selectionRoomId ?? undefined,
-          roomsSnapshot: this.rooms,
-        },
-      })
-      .afterClosed()
-      .subscribe((res: { saved: any }) => {
-        if (res?.saved) {
-          this.loadDay(this.selectedDate);
-        }
-      });
+    // wait for availability call, then open dialog
+    this.isCheckingAvailability = true;
 
-    this.selectionRoomId = null;
+    this.reservationApi
+      .busyRoomIds(startLdt, endLdt)
+      .pipe(finalize(() => (this.isCheckingAvailability = false)))
+      .subscribe({
+        next: (busyIds) => {
+          const busy = new Set<number>(busyIds);
+          const availableRooms = (this.rooms ?? []).filter((r) => !busy.has(r.id));
+
+          this.dialog
+            .open(ReserveRoomsDialogComponent, {
+              width: '720px',
+              maxWidth: '92vw',
+              panelClass: 'reserveRoomsDialogPanel',
+              autoFocus: false,
+              data: {
+                startTime: startLdt,
+                endTime: endLdt,
+                initialRoomId: roomId ?? undefined,
+
+                // pass already computed list so modal doesn't need to load
+                availableRooms,
+                availabilityFailed: false,
+
+                // keep this for backward compatibility if you still use it
+                roomsSnapshot: this.rooms,
+              },
+            })
+            .afterClosed()
+            .subscribe((res: { saved: any }) => {
+              if (res?.saved) this.loadDay(this.selectedDate);
+            });
+        },
+        error: () => {
+          // if availability service is down, you can still open modal in “unavailable” state
+          this.dialog
+            .open(ReserveRoomsDialogComponent, {
+              width: '720px',
+              maxWidth: '92vw',
+              panelClass: 'reserveRoomsDialogPanel',
+              autoFocus: false,
+              data: {
+                startTime: startLdt,
+                endTime: endLdt,
+                initialRoomId: roomId ?? undefined,
+
+                availableRooms: [],
+                availabilityFailed: true,
+
+                roomsSnapshot: this.rooms,
+              },
+            })
+            .afterClosed()
+            .subscribe((res: { saved: any }) => {
+              if (res?.saved) this.loadDay(this.selectedDate);
+            });
+        },
+      });
   };
 
   selectionStyle(): { [k: string]: string } {
     const inset = 3;
     const top = this.selectionStartSlot * this.slotPx + inset;
-    const height =
-      (this.selectionEndSlot - this.selectionStartSlot) * this.slotPx - inset * 2;
+    const height = (this.selectionEndSlot - this.selectionStartSlot) * this.slotPx - inset * 2;
 
     return {
       top: `${top}px`,
@@ -459,9 +501,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit {
   private minutesFromGridStart(iso: string): number {
     const d = new Date(iso);
     const day = iso.substring(0, 10);
-    const gridStart = new Date(
-      `${day}T${String(this.startHour).padStart(2, '0')}:00:00`
-    );
+    const gridStart = new Date(`${day}T${String(this.startHour).padStart(2, '0')}:00:00`);
 
     let diff = Math.floor((d.getTime() - gridStart.getTime()) / 60000);
     const max = (this.endHour - this.startHour) * 60;

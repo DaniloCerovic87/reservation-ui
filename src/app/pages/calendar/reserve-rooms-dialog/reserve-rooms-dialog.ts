@@ -27,6 +27,8 @@ export interface ReserveRoomsDialogData {
   endTime: string;
   initialRoomId?: number;
   roomsSnapshot: RoomDto[];
+  availableRooms?: RoomDto[];
+  availabilityFailed: boolean;
 }
 
 export interface ReserveRoomsDialogResult {
@@ -63,6 +65,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
   errorMsg: string | null = null;
 
   submitted = false;
+  availabilityFailed = false;
 
   readonly form: ReserveForm;
 
@@ -81,13 +84,20 @@ export class ReserveRoomsDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('DIALOG INIT', this.data);
+    if (this.data.availableRooms) {
+      this.rooms = this.data.availableRooms;
+      this.loading = false;
+      this.availabilityFailed = this.data.availabilityFailed;
+      this.errorMsg = this.availabilityFailed ? 'Could not load availability.' : null;
+      return;
+    }
     this.loadAvailableRoomsFromSnapshot();
   }
 
   private loadAvailableRoomsFromSnapshot() {
     this.loading = true;
     this.errorMsg = null;
+    this.availabilityFailed = false;
 
     this.reservationApi
       .busyRoomIds(this.data.startTime, this.data.endTime)
@@ -95,10 +105,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
       .subscribe({
         next: (busyIds) => {
           const busy = new Set<number>(busyIds);
-
           this.rooms = (this.data.roomsSnapshot ?? []).filter((r) => !busy.has(r.id));
-
-          console.log("Busy rooms", this.rooms);
 
           // auto-select chosen room
           if (this.data.initialRoomId && this.rooms.some((r) => r.id === this.data.initialRoomId)) {
@@ -106,15 +113,22 @@ export class ReserveRoomsDialogComponent implements OnInit {
           }
         },
         error: () => {
-          console.log("Error occurred")
+          this.availabilityFailed = true;
           this.errorMsg = 'Could not load availability.';
           this.rooms = [];
+          this.selected.clear();
         },
       });
   }
 
   get canSave(): boolean {
-    return this.form.valid && this.selected.size > 0 && !this.loading && !this.saving;
+    return (
+      this.form.valid &&
+      this.selected.size > 0 &&
+      !this.loading &&
+      !this.saving &&
+      !this.availabilityFailed
+    );
   }
 
   get rangeLabel(): string {

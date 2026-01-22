@@ -1,4 +1,4 @@
-export interface BulkReserveRequest {
+export interface CreateReservationRequest {
   roomIds: number[];
   startTime: string; // LocalDateTime
   endTime: string;

@@ -19,7 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RoomApiService } from '../../../core/services/room-api';
 import { CalendarApiService } from '../../../core/services/calendar-api';
 import { RoomDto } from '../../../core/models/room.dto';
-import { BulkReserveRequest } from '../../../core/models/bulk-reserve.request';
+import { CreateReservationRequest } from '../../../core/models/create-reservation.request';
 import {ReservationApiService} from '../../../core/services/reservation-api';
 
 export interface ReserveRoomsDialogData {
@@ -72,8 +72,6 @@ export class ReserveRoomsDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: ReserveRoomsDialogData,
     private readonly dialogRef: MatDialogRef<ReserveRoomsDialogComponent, ReserveRoomsDialogResult>,
-    private readonly roomApi: RoomApiService,
-    private readonly calendarApi: CalendarApiService,
     private readonly reservationApi: ReservationApiService,
     private readonly fb: NonNullableFormBuilder
   ) {
@@ -83,49 +81,29 @@ export class ReserveRoomsDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    if (this.data.availableRooms) {
-      this.rooms = this.data.availableRooms;
-      this.loading = false;
-      this.availabilityFailed = this.data.availabilityFailed;
-      this.errorMsg = this.availabilityFailed ? 'Could not load availability.' : null;
+  ngOnInit() {
+    this.loading = false;
+    this.errorMsg = null;
+
+    this.availabilityFailed = this.data.availabilityFailed;
+    this.rooms = this.data.availableRooms ?? [];
+
+    if (this.availabilityFailed) {
+      this.errorMsg = 'Could not load availability.';
+      this.selected.clear();
       return;
     }
-    this.loadAvailableRoomsFromSnapshot();
-  }
 
-  private loadAvailableRoomsFromSnapshot() {
-    this.loading = true;
-    this.errorMsg = null;
-    this.availabilityFailed = false;
-
-    this.reservationApi
-      .busyRoomIds(this.data.startTime, this.data.endTime)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (busyIds) => {
-          const busy = new Set<number>(busyIds);
-          this.rooms = (this.data.roomsSnapshot ?? []).filter((r) => !busy.has(r.id));
-
-          // auto-select chosen room
-          if (this.data.initialRoomId && this.rooms.some((r) => r.id === this.data.initialRoomId)) {
-            this.selected.add(this.data.initialRoomId);
-          }
-        },
-        error: () => {
-          this.availabilityFailed = true;
-          this.errorMsg = 'Could not load availability.';
-          this.rooms = [];
-          this.selected.clear();
-        },
-      });
+    // auto-select chosen room
+    if (this.data.initialRoomId && this.rooms.some(r => r.id === this.data.initialRoomId)) {
+      this.selected.add(this.data.initialRoomId);
+    }
   }
 
   get canSave(): boolean {
     return (
       this.form.valid &&
       this.selected.size > 0 &&
-      !this.loading &&
       !this.saving &&
       !this.availabilityFailed
     );
@@ -177,7 +155,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
     const v = this.form.getRawValue();
 
-    const req: BulkReserveRequest = {
+    const req: CreateReservationRequest = {
       roomIds: Array.from(this.selected),
       startTime: this.data.startTime,
       endTime: this.data.endTime,
@@ -185,8 +163,8 @@ export class ReserveRoomsDialogComponent implements OnInit {
       reservationType: v.reservationType,
     };
 
-    this.calendarApi
-      .bulkReserve(req)
+    this.reservationApi
+      .createReservation(req)
       .pipe(finalize(() => (this.saving = false)))
       .subscribe({
         next: () => this.dialogRef.close({ saved: true }),
@@ -195,38 +173,6 @@ export class ReserveRoomsDialogComponent implements OnInit {
             e?.status === 409
               ? 'Some rooms became unavailable. Please try again.'
               : 'Save failed.';
-        },
-      });
-  }
-
-  roomSpec(r: RoomDto): string {
-    const parts: string[] = [];
-    if ((r as any).capacity != null) parts.push(`cap ${(r as any).capacity}`);
-    if ((r as any).numberOfComputers != null) parts.push(`PCs ${(r as any).numberOfComputers}`);
-    if ((r as any).numberOfProjectors != null) parts.push(`proj ${(r as any).numberOfProjectors}`);
-    if ((r as any).hasSmartBoard != null) parts.push(`smart ${(r as any).hasSmartBoard ? 'yes' : 'no'}`);
-    return parts.join(' • ');
-  }
-
-  // TODO -------------- BACKEND call --------------
-  private loadAvailableRooms() {
-    this.loading = true;
-    this.errorMsg = null;
-
-    this.roomApi
-      .getAvailableRooms(this.data.startTime, this.data.endTime)
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
-        next: (rooms) => {
-          this.rooms = rooms;
-
-          if (this.data.initialRoomId && rooms.some((r) => r.id === this.data.initialRoomId)) {
-            this.selected.add(this.data.initialRoomId);
-          }
-        },
-        error: () => {
-          this.errorMsg = 'Could not load available rooms.';
-          this.rooms = [];
         },
       });
   }

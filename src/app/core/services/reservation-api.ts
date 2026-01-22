@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
+import {CreateReservationRequest} from '../models/create-reservation.request';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationApiService {
@@ -19,6 +20,10 @@ export class ReservationApiService {
         error: (err) => console.error('busy-room-ids error:', err),
       })
     );
+  }
+
+  createReservation(req: CreateReservationRequest) {
+    return this.http.post<{ createdReservationId: number }>('/api/reservations', req);
   }
 
 }

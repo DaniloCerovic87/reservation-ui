@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
-import {CreateReservationRequest} from '../models/create-reservation.request';
+import {CreateReservationRequest} from '../requests/create-reservation.request';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationApiService {

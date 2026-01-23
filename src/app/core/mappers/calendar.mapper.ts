@@ -1,4 +1,4 @@
-import { CalendarEntryDto } from '../models/calendar-entry.dto';
+import { CalendarEntryDto } from '../responses/calendar-entry.dto';
 import { ReservationBlock, ReservationStatus, ReservationType } from '../models/reservation-block';
 
 const STATUSES: ReservationStatus[] = ['PENDING','APPROVED','REJECTED','CANCELLED'];

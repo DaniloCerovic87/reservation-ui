@@ -13,14 +13,14 @@ import {
 import { CommonModule } from '@angular/common';
 import { catchError, finalize, map, of } from 'rxjs';
 
-import { ReservationBlock } from '../../core/models/reservation-block';
-import { RoomDto } from '../../core/models/room.dto';
-import { CalendarApiService } from '../../core/services/calendar-api';
-import { RoomApiService } from '../../core/services/room-api';
-import { toReservationBlock } from '../../core/mappers/calendar.mapper';
+import { ReservationBlock } from '../../../../core/models/reservation-block';
+import { RoomDto } from '../../../../core/responses/room.dto';
+import { CalendarApiService } from '../../../../core/services/calendar-api';
+import { RoomApiService } from '../../../../core/services/room-api';
+import { toReservationBlock } from '../../../../core/mappers/calendar.mapper';
 import { MatDialog } from '@angular/material/dialog';
-import { ReserveRoomsDialogComponent } from '../../pages/calendar/reserve-rooms-dialog/reserve-rooms-dialog';
-import { ReservationApiService } from '../../core/services/reservation-api';
+import { ReserveRoomsDialogComponent } from '../../dialogs/reserve-rooms-dialog/reserve-rooms-dialog';
+import { ReservationApiService } from '../../../../core/services/reservation-api';
 
 @Component({
   standalone: true,
@@ -60,7 +60,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   constructor(
     private calendarApi: CalendarApiService,
     private roomApi: RoomApiService,
-    private reservationApi: ReservationApiService, // ✅ new
+    private reservationApi: ReservationApiService,
     private zone: NgZone,
     private dialog: MatDialog
   ) {}

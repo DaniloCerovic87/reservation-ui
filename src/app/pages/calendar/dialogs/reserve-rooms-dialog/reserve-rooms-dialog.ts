@@ -16,11 +16,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { RoomApiService } from '../../../core/services/room-api';
-import { CalendarApiService } from '../../../core/services/calendar-api';
-import { RoomDto } from '../../../core/models/room.dto';
-import { CreateReservationRequest } from '../../../core/models/create-reservation.request';
-import {ReservationApiService} from '../../../core/services/reservation-api';
+import { RoomApiService } from '../../../../core/services/room-api';
+import { CalendarApiService } from '../../../../core/services/calendar-api';
+import { RoomDto } from '../../../../core/responses/room.dto';
+import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
+import {ReservationApiService} from '../../../../core/services/reservation-api';
 
 export interface ReserveRoomsDialogData {
   startTime: string;

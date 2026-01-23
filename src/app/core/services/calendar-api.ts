@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {CalendarEntryDto} from '../models/calendar-entry.dto';
+import {CalendarEntryDto} from '../responses/calendar-entry.dto';
 
 @Injectable({
   providedIn: 'root',

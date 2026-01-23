@@ -41,6 +41,42 @@
   font-size: 13px;
 }
 
+.cal__error {
+  height: 100%;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;      // vertical center
+  justify-content: center;  // horizontal center
+
+  padding: 24px;
+}
+
+.cal__errorCard {
+  width: min(520px, 92vw);
+  padding: 18px 18px 16px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  background: rgba(211, 47, 47, 0.06);
+
+  text-align: center;
+}
+
+.cal__errorTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: rgba(211, 47, 47, 0.92);
+  margin-bottom: 6px;
+}
+
+.cal__errorMsg {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+
 /* Card */
 .cal {
   --time-w: 92px;

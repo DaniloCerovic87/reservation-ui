@@ -3,7 +3,15 @@
     <div class="cal__loadingOverlay">
       <div class="spinner"></div>
     </div>
-  } @else {
+  } @else if (!canRenderGrid) {
+    <div class="cal__error">
+      <div class="cal__errorCard">
+        <div class="cal__errorTitle">Unable to load rooms</div>
+        <div class="cal__errorMsg">Please try again.</div>
+      </div>
+    </div>
+
+} @else {
     <div class="cal" [ngStyle]="{ '--slots': slotsCss, '--past-slots': pastSlotsCss }">
       <div class="cal__header">
         <div class="cal__corner"></div>

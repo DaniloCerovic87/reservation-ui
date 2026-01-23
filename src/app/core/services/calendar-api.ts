@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {CalendarEntryDto} from '../responses/calendar-entry.dto';
+import {CalendarEntryResponse} from '../responses/calendar-entry.response';
 
 @Injectable({
   providedIn: 'root',
@@ -11,9 +11,9 @@ export class CalendarApiService {
 
   constructor(private http: HttpClient) {}
 
-  getDayEntries(date: string): Observable<CalendarEntryDto[]> {
+  getDayEntries(date: string): Observable<CalendarEntryResponse[]> {
     const params = new HttpParams().set('date', date);
-    return this.http.get<CalendarEntryDto[]>(`${this.baseUrl}/day`, { params });
+    return this.http.get<CalendarEntryResponse[]>(`${this.baseUrl}/day`, { params });
   }
 
 }

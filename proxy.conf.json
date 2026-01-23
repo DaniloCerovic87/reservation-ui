@@ -1,4 +1,9 @@
 {
+  "/api/auth": {
+    "target": "http://localhost:8081",
+    "secure": false,
+    "changeOrigin": true
+  },
   "/api/calendar": {
     "target": "http://localhost:8085",
     "secure": false,

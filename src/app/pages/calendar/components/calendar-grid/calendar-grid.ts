@@ -14,14 +14,14 @@ import { CommonModule } from '@angular/common';
 import { catchError, finalize, map, of } from 'rxjs';
 
 import { ReservationBlock } from '../../../../core/models/reservation-block';
-import { RoomDto } from '../../../../core/responses/room.dto';
+import { RoomResponse } from '../../../../core/responses/room.response';
 import { CalendarApiService } from '../../../../core/services/calendar-api';
 import { RoomApiService } from '../../../../core/services/room-api';
 import {toReservationBlock, toReservationBlocksFromCreate} from '../../../../core/mappers/calendar.mapper';
 import { MatDialog } from '@angular/material/dialog';
 import { ReserveRoomsDialogComponent } from '../../dialogs/reserve-rooms-dialog/reserve-rooms-dialog';
 import { ReservationApiService } from '../../../../core/services/reservation-api';
-import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.dto';
+import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
 
 @Component({
   standalone: true,
@@ -53,7 +53,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   selectionStartSlot = 0;
   selectionEndSlot = 0;
 
-  rooms: RoomDto[] = [];
+  rooms: RoomResponse[] = [];
   allReservations: ReservationBlock[] = [];
 
   startHour = 8;
@@ -431,7 +431,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
         catchError(() => {
           this.roomsError = 'Unable to load rooms.';
           this.rooms = [];
-          return of([] as RoomDto[]);
+          return of([] as RoomResponse[]);
         }),
         finalize(() => this.isLoadingRooms = false))
       .subscribe((rooms) => {

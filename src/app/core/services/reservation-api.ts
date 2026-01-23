@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
 import {CreateReservationRequest} from '../requests/create-reservation.request';
-import {ReservationCreatedResponse} from '../responses/reservation-created.dto';
+import {ReservationCreatedResponse} from '../responses/reservation-created.response';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationApiService {

@@ -1,0 +1,56 @@
+<div class="wrap">
+  <mat-card class="card">
+    <div class="header">
+      <div class="title">Room Reservation</div>
+      <div class="subtitle">Sign in to continue</div>
+
+      @if (errorMsg) {
+        <div class="msgSlot">
+          <div class="err">{{ errorMsg }}</div>
+        </div>
+      }
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="w100">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" autocomplete="username" />
+
+        @if (form.get('username')?.invalid && (form.get('username')?.touched || submitted)) {
+          <mat-error>Username is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w100">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePass ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePass = !hidePass"
+          aria-label="Toggle password visibility">
+          <mat-icon>{{ hidePass ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if (form.get('password')?.invalid && (form.get('password')?.touched || submitted)) {
+          <mat-error>Password is required</mat-error>
+        }
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="btn w100"
+        [disabled]="loading || form.invalid">
+        {{ loading ? 'Signing in...' : 'Login' }}
+      </button>
+    </form>
+  </mat-card>
+</div>

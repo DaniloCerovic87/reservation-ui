@@ -1,4 +1,4 @@
-export interface CalendarEntryDto {
+export interface CalendarEntryResponse {
   roomId: number;
   roomName: string;
   reservationId: number;

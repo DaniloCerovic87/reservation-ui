@@ -1,6 +1,6 @@
-import { CalendarEntryDto } from '../responses/calendar-entry.dto';
+import { CalendarEntryResponse } from '../responses/calendar-entry.response';
 import { ReservationBlock, ReservationStatus, ReservationType } from '../models/reservation-block';
-import {ReservationCreatedResponse} from '../responses/reservation-created.dto';
+import {ReservationCreatedResponse} from '../responses/reservation-created.response';
 
 const STATUSES: ReservationStatus[] = ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
 const TYPES: ReservationType[] = ['BASIC', 'MASTER', 'SPECIALIST', 'DOCTORAL'];
@@ -19,7 +19,7 @@ function asType(t: string): ReservationType {
   return (TYPES as readonly string[]).includes(v) ? (v as ReservationType) : 'BASIC';
 }
 
-export function toReservationBlock(e: CalendarEntryDto): ReservationBlock {
+export function toReservationBlock(e: CalendarEntryResponse): ReservationBlock {
   return {
     roomId: e.roomId,
     roomName: e.roomName,

@@ -1,0 +1,76 @@
+.wrap {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+
+  // lepša pozadina
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(25,118,210,0.18), transparent 55%),
+  #f7f7fb;
+}
+
+.card {
+  width: min(460px, 94vw);
+  border-radius: 22px;
+  padding: 22px 22px 18px;
+
+  // “clean” shadow
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.10),
+    0 1px 2px rgba(0,0,0,0.06) !important;
+}
+
+.header {
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.btn {
+  height: 44px;
+  border-radius: 14px;
+}
+
+.msgSlot {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 10px;   // malo ispod subtitle
+  margin-bottom: 2px; // skoro bez razmaka ka username polju
+}
+
+.err {
+  width: 100%;
+  padding: 8px 12px;  // malo tanje da ne bude “teška”
+  border-radius: 14px;
+
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  background: rgba(211, 47, 47, 0.06);
+  color: rgba(211, 47, 47, 0.92);
+
+  font-size: 13px;
+  text-align: center;
+}
+
+
+

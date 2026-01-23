@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {RoomDto} from '../responses/room.dto';
+import {RoomResponse} from '../responses/room.response';
 
 
 @Injectable({providedIn: 'root'})
@@ -11,12 +11,8 @@ export class RoomApiService {
   constructor(private http: HttpClient) {
   }
 
-  getAllRooms(): Observable<RoomDto[]> {
-    return this.http.get<RoomDto[]>(this.baseUrl);
+  getAllRooms(): Observable<RoomResponse[]> {
+    return this.http.get<RoomResponse[]>(this.baseUrl);
   }
 
-  getAvailableRooms(startTime: string, endTime: string) {
-    const params = new HttpParams().set('startTime', startTime).set('endTime', endTime);
-    return this.http.get<RoomDto[]>('/api/rooms/available', { params });
-  }
 }

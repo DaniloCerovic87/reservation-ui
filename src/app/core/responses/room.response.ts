@@ -1,4 +1,4 @@
-export interface RoomDto {
+export interface RoomResponse {
   id: number;
   name: string;
   roomType: 'AMPHITHEATER' | 'CLASSROOM' | 'COMPUTER_ROOM' | string;

@@ -1,67 +1,102 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import {CalendarGrid} from '../calendar-grid/calendar-grid';
-import {FormsModule} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+
+import { Observable } from 'rxjs';
+
+import { CalendarGrid } from '../calendar-grid/calendar-grid';
+import {CurrentUser} from '../../../../core/models/current-user';
+import {AuthApi} from '../../../../core/auth/auth-api';
+
+type ViewMode = 'ALL' | 'MINE';
 
 @Component({
   standalone: true,
   selector: 'app-day-grid',
   imports: [
     CommonModule,
-    CalendarGrid,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
     FormsModule,
+
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
     MatButtonToggleModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatInputModule,
+
+    CalendarGrid,
   ],
-  providers: [provideNativeDateAdapter()],
   templateUrl: './day-grid.html',
   styleUrls: ['./day-grid.scss'],
 })
 export class DayGrid {
-  selectedDate = new Date();
-  viewMode: 'ALL' | 'MINE' = 'ALL';
-  myEmployeeId = 51;
+  user$!: Observable<CurrentUser | null>;
+
+  viewMode: ViewMode = 'ALL';
+
+  selectedDateIso = this.toIsoDate(new Date());
+  selectedDate: Date = new Date();
+
+  myEmployeeId = 0;
+
+  constructor(private auth: AuthApi) {
+    // init observable AFTER DI is ready
+    this.user$ = this.auth.currentUser$();
+
+    // initialize from stored user (if present)
+    const u = this.auth.currentUser();
+    this.myEmployeeId = u?.employeeId ?? 0;
+    if (!this.myEmployeeId) this.viewMode = 'ALL';
+
+    // keep in sync
+    this.user$.subscribe((user) => {
+      this.myEmployeeId = user?.employeeId ?? 0;
+      if (!this.myEmployeeId && this.viewMode === 'MINE') {
+        this.viewMode = 'ALL';
+      }
+    });
+  }
 
   prevDay() {
-    this.selectedDate = this.addDays(this.selectedDate, -1);
+    const d = new Date(this.selectedDate);
+    d.setDate(d.getDate() - 1);
+    this.setPickedDate(d);
   }
 
   nextDay() {
-    this.selectedDate = this.addDays(this.selectedDate, 1);
+    const d = new Date(this.selectedDate);
+    d.setDate(d.getDate() + 1);
+    this.setPickedDate(d);
   }
 
   today() {
-    this.selectedDate = new Date();
+    this.setPickedDate(new Date());
   }
 
   onDatePicked(d: Date | null) {
-    if (d) this.selectedDate = d;
+    if (!d) return;
+    this.setPickedDate(d);
   }
 
-  private addDays(date: Date, days: number) {
-    const d = new Date(date);
-    d.setDate(d.getDate() + days);
-    return d;
+  private setPickedDate(d: Date) {
+    const normalized = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    this.selectedDate = normalized;
+    this.selectedDateIso = this.toIsoDate(normalized);
   }
 
-  get selectedDateIso(): string {
-    const y = this.selectedDate.getFullYear();
-    const m = String(this.selectedDate.getMonth() + 1).padStart(2, '0');
-    const d = String(this.selectedDate.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+  private toIsoDate(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 }

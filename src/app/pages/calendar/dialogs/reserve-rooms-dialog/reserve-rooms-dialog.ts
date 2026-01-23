@@ -16,17 +16,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { RoomDto } from '../../../../core/responses/room.dto';
+import { RoomResponse } from '../../../../core/responses/room.response';
 import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
-import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.dto';
+import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
   endTime: string;
   initialRoomId?: number;
-  roomsSnapshot: RoomDto[];
-  availableRooms?: RoomDto[];
+  roomsSnapshot: RoomResponse[];
+  availableRooms?: RoomResponse[];
   availabilityFailed: boolean;
 }
 
@@ -57,7 +57,7 @@ type ReserveForm = FormGroup<{
   styleUrls: ['./reserve-rooms-dialog.scss'],
 })
 export class ReserveRoomsDialogComponent implements OnInit {
-  rooms: RoomDto[] = [];
+  rooms: RoomResponse[] = [];
   selected = new Set<number>();
 
   loading = false;

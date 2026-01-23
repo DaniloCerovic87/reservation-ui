@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
 import {CreateReservationRequest} from '../requests/create-reservation.request';
+import {ReservationCreatedResponse} from '../responses/reservation-created.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationApiService {
@@ -23,7 +24,7 @@ export class ReservationApiService {
   }
 
   createReservation(req: CreateReservationRequest) {
-    return this.http.post<{ createdReservationId: number }>('/api/reservations', req);
+    return this.http.post<ReservationCreatedResponse>('/api/reservations', req);
   }
 
 }

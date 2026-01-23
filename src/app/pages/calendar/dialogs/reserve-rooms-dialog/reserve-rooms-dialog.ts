@@ -16,11 +16,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
-import { RoomApiService } from '../../../../core/services/room-api';
-import { CalendarApiService } from '../../../../core/services/calendar-api';
 import { RoomDto } from '../../../../core/responses/room.dto';
 import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
+import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.dto';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
@@ -33,6 +32,7 @@ export interface ReserveRoomsDialogData {
 
 export interface ReserveRoomsDialogResult {
   saved: boolean;
+  created?: ReservationCreatedResponse;
 }
 
 type ReserveForm = FormGroup<{
@@ -153,27 +153,47 @@ export class ReserveRoomsDialogComponent implements OnInit {
     this.saving = true;
     this.errorMsg = null;
 
+    // TODO - to be fetched from token
+    const employeeId = 51;
+
     const v = this.form.getRawValue();
 
     const req: CreateReservationRequest = {
       roomIds: Array.from(this.selected),
+      employeeId: employeeId,
       startTime: this.data.startTime,
       endTime: this.data.endTime,
       reservationName: v.reservationName,
-      reservationType: v.reservationType,
+      reservationType: v.reservationType
     };
 
     this.reservationApi
       .createReservation(req)
       .pipe(finalize(() => (this.saving = false)))
       .subscribe({
-        next: () => this.dialogRef.close({ saved: true }),
+        next: (created) => this.dialogRef.close({ saved: true, created }),
         error: (e) => {
-          this.errorMsg =
-            e?.status === 409
-              ? 'Some rooms became unavailable. Please try again.'
-              : 'Save failed.';
-        },
+          if (e?.status >= 500 && e?.status < 600) {
+            this.errorMsg = 'Server error. Please try again later.';
+            return;
+          }
+
+          const errs = e?.error?.errors;
+
+          if (Array.isArray(errs) && errs.length > 0) {
+            this.errorMsg = errs.join('\n');
+            return;
+          }
+
+          if (e?.error?.debugMessage) {
+            this.errorMsg = e.error.debugMessage;
+            return;
+          }
+
+          this.errorMsg = 'Save failed.';
+        }
+
       });
+
   }
 }

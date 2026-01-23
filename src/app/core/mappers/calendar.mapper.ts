@@ -1,12 +1,14 @@
 import { CalendarEntryDto } from '../responses/calendar-entry.dto';
 import { ReservationBlock, ReservationStatus, ReservationType } from '../models/reservation-block';
+import {ReservationCreatedResponse} from '../responses/reservation-created.dto';
 
-const STATUSES: ReservationStatus[] = ['PENDING','APPROVED','REJECTED','CANCELLED'];
-const TYPES: ReservationType[] = ['BASIC','MASTER','SPECIALIST','DOCTORAL'];
+const STATUSES: ReservationStatus[] = ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
+const TYPES: ReservationType[] = ['BASIC', 'MASTER', 'SPECIALIST', 'DOCTORAL'];
 
 function norm(s: string): string {
   return (s ?? '').trim().toUpperCase();
 }
+
 function asStatus(s: string): ReservationStatus {
   const v = norm(s);
   return (STATUSES as readonly string[]).includes(v) ? (v as ReservationStatus) : 'PENDING';
@@ -30,4 +32,26 @@ export function toReservationBlock(e: CalendarEntryDto): ReservationBlock {
     employeeId: e.employeeId,
     employeeName: e.employeeName,
   };
+}
+
+/**
+ * Create response returns ONE reservation with multiple roomIds.
+ * Grid needs ONE block per room, so we split it here.
+ */
+export function toReservationBlocksFromCreate(
+  created: ReservationCreatedResponse,
+  roomNameById: Map<number, string>
+): ReservationBlock[] {
+  return (created.roomIds ?? []).map((roomId: number) => ({
+    roomId,
+    roomName: roomNameById.get(roomId) ?? '',
+    reservationId: created.id,
+    reservationName: created.reservationName,
+    reservationType: asType(created.reservationType),
+    status: asStatus(created.reservationStatus),
+    startTime: created.startTime,
+    endTime: created.endTime,
+    employeeId: created.employeeId,
+    employeeName: created.employeeName,
+  }));
 }

@@ -17,10 +17,11 @@ import { ReservationBlock } from '../../../../core/models/reservation-block';
 import { RoomDto } from '../../../../core/responses/room.dto';
 import { CalendarApiService } from '../../../../core/services/calendar-api';
 import { RoomApiService } from '../../../../core/services/room-api';
-import { toReservationBlock } from '../../../../core/mappers/calendar.mapper';
+import {toReservationBlock, toReservationBlocksFromCreate} from '../../../../core/mappers/calendar.mapper';
 import { MatDialog } from '@angular/material/dialog';
 import { ReserveRoomsDialogComponent } from '../../dialogs/reserve-rooms-dialog/reserve-rooms-dialog';
 import { ReservationApiService } from '../../../../core/services/reservation-api';
+import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.dto';
 
 @Component({
   standalone: true,
@@ -72,7 +73,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedDate']?.currentValue && !changes['selectedDate']?.firstChange) {
-      // ✅ avoid “stuck selection” when changing date
+      // avoid “stuck selection” when changing date
       this.resetSelection();
       this.loadDay(this.selectedDate);
     }
@@ -358,8 +359,10 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
               },
             })
             .afterClosed()
-            .subscribe((res: { saved: any }) => {
-              if (res?.saved) this.loadDay(this.selectedDate);
+            .subscribe((res: { saved: boolean; created?: ReservationCreatedResponse } | undefined) => {
+              if (res?.saved && res.created) {
+                this.addCreatedReservationToGrid(res.created);
+              }
             });
         },
         error: () => {
@@ -513,5 +516,13 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     const endMin = this.minutesFromGridStart(r.endTime);
     const durationMin = Math.max(0, endMin - startMin);
     return durationMin <= 30;
+  }
+
+  private addCreatedReservationToGrid(created: ReservationCreatedResponse) {
+    const roomNameById = new Map(this.rooms.map(r => [r.id, r.name] as const));
+    const newBlocks = toReservationBlocksFromCreate(created, roomNameById);
+
+    this.allReservations = this.allReservations.filter(b => b.reservationId !== created.id);
+    this.allReservations = [...newBlocks, ...this.allReservations];
   }
 }

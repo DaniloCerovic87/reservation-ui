@@ -9,7 +9,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import {CalendarGrid} from '../calendar-grid/calendar-grid';
-import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
@@ -19,7 +18,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
   imports: [
     CommonModule,
     CalendarGrid,
-
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,

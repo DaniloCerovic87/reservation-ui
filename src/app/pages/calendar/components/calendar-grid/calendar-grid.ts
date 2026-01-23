@@ -38,6 +38,9 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
 
+  isLoadingRooms = false;
+  isLoadingDay = false;
+
   isCheckingAvailability = false; // before opening modal
   errorMsg: string | null = null;
 
@@ -418,8 +421,10 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   loadRooms() {
+    this.isLoadingRooms = true;
     this.roomApi
       .getAllRooms()
+      .pipe(finalize(() => this.isLoadingRooms = false))
       .subscribe((rooms) => {
         this.rooms = rooms;
         this.runAfterRender(() => this.updateHorizontalScrollClass());
@@ -428,6 +433,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
   loadDay(date: string) {
     this.errorMsg = null;
+    this.isLoadingDay = true;
 
     this.calendarApi
       .getDayEntries(date)
@@ -437,12 +443,17 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
           this.errorMsg = 'Unable to load reservations.';
           this.allReservations = [];
           return of([] as ReservationBlock[]);
-        })
+        }),
+        finalize(() => this.isLoadingDay = false)
       )
       .subscribe((blocks) => {
         this.allReservations = blocks;
         this.runAfterRender(() => this.updateHorizontalScrollClass());
       });
+  }
+
+  get isInitialLoading(): boolean {
+    return this.isLoadingRooms || this.isLoadingDay;
   }
 
   onBodyScroll() {

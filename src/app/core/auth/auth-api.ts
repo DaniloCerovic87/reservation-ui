@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {AuthResponse} from '../responses/auth.response';
 import {LoginRequest} from '../requests/login-request';
 import {CurrentUser} from '../models/current-user';
+import {Router} from '@angular/router';
 
 const STORAGE_KEY = 'rr_current_user';
 
@@ -11,7 +12,8 @@ const STORAGE_KEY = 'rr_current_user';
 export class AuthApi {
   private readonly user$ = new BehaviorSubject<CurrentUser | null>(this.readFromStorage());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private router: Router) {}
 
   login(req: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>('/api/auth/login', req).pipe(
@@ -31,6 +33,11 @@ export class AuthApi {
   }
 
   logout(): void {
+    this.clearSession();
+    void this.router.navigateByUrl('/login');
+  }
+
+  private clearSession() {
     localStorage.removeItem(STORAGE_KEY);
     this.user$.next(null);
   }

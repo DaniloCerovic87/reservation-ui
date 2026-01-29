@@ -2,18 +2,10 @@
   display: flex;
   flex-direction: column;
 
-  /* Important: the flex layout needs a defined height to measure against.
-     If your app root already provides 100% height, this is fine.
-     If not, see the note below for html/body height. */
-  height: 100%;
+  /* safest: avoids layout collapse if parent height chain isn't set */
+  height: 100vh;
   min-height: 0;
 }
-
-/* NOTE (global layout):
-   If you ever see the content collapsing or the calendar not filling the page height,
-   make sure these exist somewhere globally (e.g. styles.scss):
-   html, body { height: 100%; }
-   app-root { height: 100%; display: block; } */
 
 /* Toolbar stays sticky at the top */
 .toolbar {
@@ -23,7 +15,6 @@
 
   overflow: visible;
 
-  /* Angular Material toolbar is already flex, but we keep it explicit */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -44,48 +35,80 @@
   align-self: center;
 }
 
+/* Datepicker visual alignment */
 .dateField {
   width: 220px;
   align-self: center;
   transform: translateY(12px);
 }
 
-/* ===== User badge (logged-in user indicator) =====
-   Placed to the right of the datepicker.
-   Visual purpose only (identity / role hint), no actions here.
-*/
-.userBadge {
+/* ===== User button ===== */
+.userBtn {
+  align-self: center;
+  transform: translateY(10px);
+  margin-left: 6px;
+  border-radius: 999px;
+}
+
+.userBtn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.userBtn--loading {
+  opacity: 0.5;
+}
+
+/* wrapper for avatar */
+.userIconWrap {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-
-  padding: 6px 10px;
-  border-radius: 999px;
-
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  white-space: nowrap;
-
-  /* Align vertically with datepicker (datepicker is visually lowered) */
-  transform: translateY(12px);
-
-  /* Small spacing from datepicker */
-  margin-left: 8px;
+  justify-content: center;
 }
 
-.userName {
+/* SVG avatar sizing */
+.userAvatar {
+  display: block;
+}
+
+/* ===== Menu hooks ===== */
+.userMenu {
+  /* mat-menu panel styling often requires global styles; keep as hook */
+}
+
+.userMenuItem {
+  display: flex;
+  align-items: center;
+}
+
+.userMenuItem--header {
+  opacity: 1 !important; /* disabled items are dimmed */
+}
+
+.userMenuItem--role {
+  cursor: default;
+}
+
+.userMenuItem--role:hover {
+  background: transparent;
+}
+
+.userMenuItem--logout {
   font-weight: 600;
-  font-size: 13px;
 }
 
-.userRole {
-  font-size: 12px;
-  opacity: 0.9;
+.userMenuIcon {
+  margin-right: 8px;
 }
 
-/* The content area must be a flex container so the child (app-calendar-grid)
-   can use flex: 1 and fill the remaining height */
+.userMenuText {
+  white-space: nowrap;
+}
+
+.userMenuDivider {
+  margin: 6px 0;
+}
+
+/* Content area must fill remaining height */
 .content {
   flex: 1;
   min-height: 0;
@@ -97,11 +120,21 @@
   flex-direction: column;
 }
 
-/* KEY POINT:
-   The calendar component must be allowed to grow and shrink inside the flex layout.
-   min-height: 0 prevents overflow issues where a flex child refuses to shrink. */
+/* Calendar grid must be allowed to grow/shrink */
 .content > app-calendar-grid {
   flex: 1;
   min-height: 0;
   display: block;
+}
+
+/* Small screens */
+@media (max-width: 900px) {
+  .toolbar {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .dateField {
+    width: 180px;
+  }
 }

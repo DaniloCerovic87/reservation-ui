@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthApi } from '../../core/auth/auth-api';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   standalone: true,
@@ -40,8 +41,10 @@ export class Login {
   constructor(
     private fb: FormBuilder,
     private auth: AuthApi,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {
+    this.dialog.closeAll();
     this.form = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],

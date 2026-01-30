@@ -271,7 +271,7 @@
   pointer-events: auto;
   cursor: not-allowed;
 
-  z-index: 2;
+  z-index: 6;
 }
 
 /* when dragging */
@@ -293,8 +293,11 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
   overflow: hidden;
-  cursor: pointer;
+  cursor: default;
 }
+
+.block--clickable { cursor: pointer !important; }
+.block--clickable:hover { filter: brightness(0.97); }
 
 .block__title {
   font-weight: 900;

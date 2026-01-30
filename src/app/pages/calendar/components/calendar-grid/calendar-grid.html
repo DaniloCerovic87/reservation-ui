@@ -53,8 +53,12 @@
               @for (r of reservationsForRoom(room.id); track r.reservationId) {
                 <div
                   class="block"
-                  [ngClass]="[statusClass(r), colorClass(r)]"
+                  [ngClass]="[
+                    statusClass(r),
+                    colorClass(r)]"
+                  [class.block--clickable]="canAdminReview(r)"
                   [ngStyle]="blockStyle(r)"
+                  (click)="onReservationClick(r, $event)"
                   [title]="
                 r.reservationName + ' - ' + r.employeeName + '\n' +
                 hhmm(r.startTime) + '–' + hhmm(r.endTime)

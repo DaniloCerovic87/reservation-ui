@@ -17,8 +17,12 @@
     class="filterGroup"
   >
     <mat-button-toggle value="ALL">Sve</mat-button-toggle>
-    <mat-button-toggle value="MINE" [disabled]="!myEmployeeId">Moje</mat-button-toggle>
+
+    @if (!isAdmin) {
+      <mat-button-toggle value="MINE">Moje</mat-button-toggle>
+    }
   </mat-button-toggle-group>
+
 
   <span class="spacer"></span>
 
@@ -115,5 +119,7 @@
     [selectedDate]="selectedDateIso"
     [showOnlyMine]="viewMode === 'MINE'"
     [myEmployeeId]="myEmployeeId"
+    [isAdmin]="isAdmin"
+    (reservationSelected)="openAdminReview($event)"
   ></app-calendar-grid>
 </div>

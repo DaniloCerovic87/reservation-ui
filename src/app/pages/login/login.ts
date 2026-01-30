@@ -66,9 +66,7 @@ export class Login {
     this.auth.login(req).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigateByUrl('/').then((ok) => {
-          console.log('NAVIGATE OK?', ok);
-        })
+        void this.router.navigateByUrl('/');
       },
       error: (err) => {
         this.loading = false;

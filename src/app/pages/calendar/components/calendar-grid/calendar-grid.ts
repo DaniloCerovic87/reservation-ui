@@ -1,12 +1,12 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
+  ElementRef, EventEmitter,
   Input,
   NgZone,
   OnChanges,
   OnDestroy,
-  OnInit,
+  OnInit, Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -37,6 +37,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   @Input({ required: true }) selectedDate!: string;
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
+  @Input() isAdmin = false;
+  @Output() reservationSelected = new EventEmitter<ReservationBlock>();
 
   isLoadingRooms = false;
   isLoadingDay = false;
@@ -470,6 +472,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   onBodyScroll() {
+    if (!this.bodyScroll?.nativeElement || !this.headerRooms?.nativeElement) return;
+
     this.headerRooms.nativeElement.scrollLeft = this.bodyScroll.nativeElement.scrollLeft;
   }
 
@@ -540,6 +544,25 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     const endMin = this.minutesFromGridStart(r.endTime);
     const durationMin = Math.max(0, endMin - startMin);
     return durationMin <= 30;
+  }
+
+  canAdminReview(r: ReservationBlock): boolean {
+    if (!this.isAdmin) {
+      return false;
+    }
+    if (r.status !== 'PENDING') {
+      return false;
+    }
+
+    const startMs = new Date(r.startTime).getTime();
+    return startMs > Date.now();
+  }
+
+  onReservationClick(r: ReservationBlock, ev: MouseEvent) {
+    ev.stopPropagation();
+    if (!this.canAdminReview(r)) return;
+
+    this.reservationSelected.emit(r);
   }
 
   private addCreatedReservationToGrid(created: ReservationCreatedResponse) {

@@ -19,7 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CalendarGrid } from '../calendar-grid/calendar-grid';
 import { CurrentUser } from '../../../../core/models/current-user';
 import { AuthApi } from '../../../../core/auth/auth-api';
-import {Router} from '@angular/router';
 
 type ViewMode = 'ALL' | 'MINE';
 
@@ -55,6 +54,7 @@ export class DayGrid {
   selectedDate: Date = new Date();
 
   myEmployeeId = 0;
+  isAdmin = false;
 
   constructor(private auth: AuthApi) {
 
@@ -63,6 +63,11 @@ export class DayGrid {
     // initialize from stored user (if present)
     const u = this.auth.currentUser();
     this.myEmployeeId = u?.employeeId ?? 0;
+
+    console.log("Da li je admin: ", this.isAdmin);
+    this.isAdmin =u?.role === 'ADMIN';
+    if (this.isAdmin) this.viewMode = 'ALL';
+
     if (!this.myEmployeeId) this.viewMode = 'ALL';
 
     // keep in sync (no memory leaks)
@@ -70,6 +75,14 @@ export class DayGrid {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.myEmployeeId = user?.employeeId ?? 0;
+
+        this.isAdmin = user?.role === 'ADMIN';
+
+        if (this.isAdmin) {
+          this.viewMode = 'ALL';
+        }
+
+        // safety: do not show MINE if employee id not present
         if (!this.myEmployeeId && this.viewMode === 'MINE') {
           this.viewMode = 'ALL';
         }
@@ -99,6 +112,11 @@ export class DayGrid {
   onDatePicked(d: Date | null) {
     if (!d) return;
     this.setPickedDate(d);
+  }
+
+  openAdminReview(r: any) {
+    // TODO: ovde posle otvaraš MatDialog za approve/reject
+    console.log('Admin review:', r);
   }
 
   private setPickedDate(d: Date) {

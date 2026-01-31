@@ -2,7 +2,7 @@ import { CalendarEntryResponse } from '../responses/calendar-entry.response';
 import { ReservationBlock, ReservationStatus, ReservationType } from '../models/reservation-block';
 import {ReservationCreatedResponse} from '../responses/reservation-created.response';
 
-const STATUSES: ReservationStatus[] = ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
+const STATUSES: ReservationStatus[] = ['PENDING', 'APPROVED', 'DECLINED'];
 const TYPES: ReservationType[] = ['BASIC', 'MASTER', 'SPECIALIST', 'DOCTORAL'];
 
 function norm(s: string): string {

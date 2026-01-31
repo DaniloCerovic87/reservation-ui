@@ -1,4 +1,4 @@
-export type ReservationStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+export type ReservationStatus = 'PENDING' | 'APPROVED' | 'DECLINED';
 export type ReservationType = 'BASIC' | 'MASTER' | 'SPECIALIST' | 'DOCTORAL';
 
 export interface ReservationBlock {

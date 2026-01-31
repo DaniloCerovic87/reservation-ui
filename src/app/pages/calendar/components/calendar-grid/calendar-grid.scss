@@ -271,7 +271,7 @@
   pointer-events: auto;
   cursor: not-allowed;
 
-  z-index: 6;
+  z-index: 2;
 }
 
 /* when dragging */
@@ -341,7 +341,7 @@
 .c-pending-specialist { background: rgba(25, 118, 210, 0.4); }
 .c-pending-doctoral { background: rgba(25, 118, 210, 0.54); }
 
-.c-approved-basic { background: rgba(211, 47, 47, 0.12); }
-.c-approved-master { background: rgba(211, 47, 47, 0.26); }
-.c-approved-specialist { background: rgba(211, 47, 47, 0.4); }
-.c-approved-doctoral { background: rgba(211, 47, 47, 0.54); }
+.c-approved-basic { background: rgba(34, 197, 94, 0.12); }
+.c-approved-master { background: rgba(34, 197, 94, 0.26); }
+.c-approved-specialist { background: rgba(34, 197, 94, 0.40); }
+.c-approved-doctoral { background: rgba(34, 197, 94, 0.54); }

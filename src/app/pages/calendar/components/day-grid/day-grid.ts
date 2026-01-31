@@ -114,11 +114,6 @@ export class DayGrid {
     this.setPickedDate(d);
   }
 
-  openAdminReview(r: any) {
-    // TODO: ovde posle otvaraš MatDialog za approve/reject
-    console.log('Admin review:', r);
-  }
-
   private setPickedDate(d: Date) {
     const normalized = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     this.selectedDate = normalized;

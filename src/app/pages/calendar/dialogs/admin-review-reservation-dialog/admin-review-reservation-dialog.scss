@@ -1,0 +1,22 @@
+.content {
+  display: grid;
+  gap: 10px;
+  min-width: 380px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.label {
+  opacity: 0.75;
+  font-size: 12px;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 500;
+}

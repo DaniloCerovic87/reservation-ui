@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>
+  Review reservation
+</h2>
+
+<div mat-dialog-content class="content">
+  <div class="row">
+    <div class="label">Name</div>
+    <div class="value">{{ data.reservation.reservationName }}</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Employee</div>
+    <div class="value">{{ data.reservation.employeeName }}</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Room</div>
+    <div class="value">{{ data.reservation.roomName }}</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Type</div>
+    <div class="value">{{ data.reservation.reservationType }}</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Status</div>
+    <div class="value">{{ data.reservation.status }}</div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="row">
+    <div class="label">Time</div>
+    <div class="value">
+      {{ hhmm(data.reservation.startTime) }} – {{ hhmm(data.reservation.endTime) }}
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()" [disabled]="submitting()">Cancel</button>
+
+  <button
+    mat-stroked-button
+    (click)="decline()"
+    [disabled]="submitting()"
+  >
+    Reject
+  </button>
+
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="approve()"
+    [disabled]="submitting()"
+  >
+    Approve
+  </button>
+</div>

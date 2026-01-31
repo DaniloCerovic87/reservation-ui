@@ -1,12 +1,12 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, EventEmitter,
+  ElementRef,
   Input,
   NgZone,
   OnChanges,
   OnDestroy,
-  OnInit, Output,
+  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -21,7 +21,8 @@ import {toReservationBlock, toReservationBlocksFromCreate} from '../../../../cor
 import { MatDialog } from '@angular/material/dialog';
 import { ReserveRoomsDialogComponent } from '../../dialogs/reserve-rooms-dialog/reserve-rooms-dialog';
 import { ReservationApiService } from '../../../../core/services/reservation-api';
-import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
+import { ReservationCreatedResponse } from '../../../../core/responses/reservation-created.response';
+import { AdminReviewReservationDialog } from '../../dialogs/admin-review-reservation-dialog/admin-review-reservation-dialog';
 
 @Component({
   standalone: true,
@@ -38,7 +39,6 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   @Input() showOnlyMine = false;
   @Input() myEmployeeId!: number;
   @Input() isAdmin = false;
-  @Output() reservationSelected = new EventEmitter<ReservationBlock>();
 
   isLoadingRooms = false;
   isLoadingDay = false;
@@ -490,8 +490,17 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   get visibleReservations(): ReservationBlock[] {
-    if (!this.showOnlyMine) return this.allReservations;
-    return this.allReservations.filter((r) => r.employeeId === this.myEmployeeId);
+    const base = this.allReservations.filter(r => this.isRenderable(r));
+
+    if (!this.showOnlyMine) {
+      return base;
+    }
+
+    return base.filter((r) => r.employeeId === this.myEmployeeId);
+  }
+
+  private isRenderable(r: ReservationBlock): boolean {
+    return r.status !== 'DECLINED';
   }
 
   reservationsForRoom(roomId: number) {
@@ -560,9 +569,58 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
   onReservationClick(r: ReservationBlock, ev: MouseEvent) {
     ev.stopPropagation();
-    if (!this.canAdminReview(r)) return;
+    if (!this.canAdminReview(r)) {
+      return;
+    }
 
-    this.reservationSelected.emit(r);
+    this.openAdminReviewDialog(r);
+  }
+
+  private openAdminReviewDialog(r: ReservationBlock) {
+    const ref = this.dialog.open(AdminReviewReservationDialog, {
+      width: '520px',
+      maxWidth: '92vw',
+      autoFocus: false,
+      data: { reservation: r },
+    });
+
+    ref.afterClosed().subscribe((res: { action?: 'APPROVE' | 'DECLINE' } | undefined) => {
+      if (!res?.action){
+        return;
+      }
+
+      const id = r.reservationId;
+
+      const call$ =
+        res.action === 'APPROVE'
+          ? this.reservationApi.approveReservation(id)
+          : this.reservationApi.declineReservation(id);
+
+      call$.subscribe({
+        next: () => {
+          // eventual consistency
+          if (res.action === 'APPROVE') {
+            this.patchReservationStatus(r.reservationId, 'APPROVED');
+          } else {
+            this.removeReservationFromGrid(r.reservationId);
+          }
+        },
+        error: (err) => {
+          console.error('Approve/decline failed', err);
+          // TODO error handling
+        },
+      });
+    });
+  }
+
+  private patchReservationStatus(id: number, newStatus: 'APPROVED' | 'DECLINED') {
+    this.allReservations = this.allReservations.map(b =>
+      b.reservationId === id ? { ...b, status: newStatus } : b
+    );
+  }
+
+  private removeReservationFromGrid(id: number) {
+    this.allReservations = this.allReservations.filter(b => b.reservationId !== id);
   }
 
   private addCreatedReservationToGrid(created: ReservationCreatedResponse) {

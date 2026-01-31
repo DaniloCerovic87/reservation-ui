@@ -27,4 +27,23 @@ export class ReservationApiService {
     return this.http.post<ReservationCreatedResponse>('/api/reservations', req);
   }
 
+  approveReservation(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${id}/approve`, null).pipe(
+      tap({
+        next: () => console.log(`approveReservation OK (id=${id})`),
+        error: (err) => console.error(`approveReservation error (id=${id})`, err),
+      })
+    );
+  }
+
+  declineReservation(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.baseUrl}/${id}/decline`, null).pipe(
+      tap({
+        next: () => console.log(`declineReservation OK (id=${id})`),
+        error: (err) => console.error(`declineReservation error (id=${id})`, err),
+      })
+    );
+  }
+
+
 }

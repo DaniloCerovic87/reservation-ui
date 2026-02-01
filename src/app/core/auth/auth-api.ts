@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {BehaviorSubject, Observable, tap} from 'rxjs';
 import {AuthResponse} from '../responses/auth.response';
 import {LoginRequest} from '../requests/login-request';
 import {CurrentUser} from '../models/current-user';
@@ -8,7 +8,7 @@ import {Router} from '@angular/router';
 
 const STORAGE_KEY = 'rr_current_user';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthApi {
   private readonly user$ = new BehaviorSubject<CurrentUser | null>(this.readFromStorage());
   private logoutTimer: any;
@@ -47,7 +47,23 @@ export class AuthApi {
 
   logout(): void {
     this.clearSession();
-    void this.router.navigateByUrl('/login', { replaceUrl: true });
+    void this.router.navigateByUrl('/login', {replaceUrl: true});
+  }
+
+  currentUser$(): Observable<CurrentUser | null> {
+    return this.user$.asObservable();
+  }
+
+  currentUser(): CurrentUser | null {
+    return this.user$.value;
+  }
+
+  token(): string | null {
+    return this.user$.value?.token ?? null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.user$.value?.token;
   }
 
   private scheduleAutoLogout(token: string) {
@@ -91,22 +107,6 @@ export class AuthApi {
 
     localStorage.removeItem(STORAGE_KEY);
     this.user$.next(null);
-  }
-
-  currentUser$(): Observable<CurrentUser | null> {
-    return this.user$.asObservable();
-  }
-
-  currentUser(): CurrentUser | null {
-    return this.user$.value;
-  }
-
-  token(): string | null {
-    return this.user$.value?.token ?? null;
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.user$.value?.token;
   }
 
   private readFromStorage(): CurrentUser | null {

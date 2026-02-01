@@ -15,14 +15,14 @@
   </div>
 </div>
 
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="close()" [disabled]="saving">Cancel</button>
+<div align="end" mat-dialog-actions>
+  <button (click)="close()" [disabled]="saving" mat-button>Cancel</button>
 
-  <button mat-stroked-button (click)="decline()" [disabled]="saving">
+  <button (click)="decline()" [disabled]="saving" mat-stroked-button>
     Decline
   </button>
 
-  <button mat-flat-button color="primary" (click)="approve()" [disabled]="saving">
+  <button (click)="approve()" [disabled]="saving" color="primary" mat-flat-button>
     Approve
   </button>
 </div>

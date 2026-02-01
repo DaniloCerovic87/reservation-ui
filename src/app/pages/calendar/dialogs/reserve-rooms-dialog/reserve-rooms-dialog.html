@@ -1,9 +1,9 @@
-<h2 mat-dialog-title class="title">
+<h2 class="title" mat-dialog-title>
   New reservation
   <span class="subtitle">{{ rangeLabel }}</span>
 </h2>
 
-<div mat-dialog-content class="content">
+<div class="content" mat-dialog-content>
   @if (loading) {
     <div class="info loading">Loading available rooms...</div>
   }
@@ -77,11 +77,11 @@
   <form [formGroup]="form" class="form">
     <mat-form-field appearance="outline">
       <mat-label>Reservation name</mat-label>
-      <input matInput formControlName="reservationName" />
-      @if (isInvalid('reservationName') && hasError('reservationName','required')) {
+      <input formControlName="reservationName" matInput/>
+      @if (isInvalid('reservationName') && hasError('reservationName', 'required')) {
         <mat-error>Name is required.</mat-error>
       }
-      @if (isInvalid('reservationName') && hasError('reservationName','minlength')) {
+      @if (isInvalid('reservationName') && hasError('reservationName', 'minlength')) {
         <mat-error>Min 2 characters.</mat-error>
       }
     </mat-form-field>
@@ -102,13 +102,13 @@
   </form>
 </div>
 
-<div mat-dialog-actions class="actions">
-  <button mat-button (click)="close()">Cancel</button>
+<div class="actions" mat-dialog-actions>
+  <button (click)="close()" mat-button>Cancel</button>
   <button
-    mat-raised-button
-    color="primary"
     (click)="save()"
     [disabled]="saving || !canSave"
+    color="primary"
+    mat-raised-button
   >
     Save
   </button>

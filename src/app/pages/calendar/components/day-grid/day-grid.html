@@ -1,11 +1,11 @@
 <mat-toolbar class="toolbar" color="primary">
-  <button mat-icon-button (click)="prevDay()" aria-label="Previous day">
+  <button (click)="prevDay()" aria-label="Previous day" mat-icon-button>
     <mat-icon>chevron_left</mat-icon>
   </button>
 
-  <button mat-button (click)="today()">Today</button>
+  <button (click)="today()" mat-button>Today</button>
 
-  <button mat-icon-button (click)="nextDay()" aria-label="Next day">
+  <button (click)="nextDay()" aria-label="Next day" mat-icon-button>
     <mat-icon>chevron_right</mat-icon>
   </button>
 
@@ -28,12 +28,12 @@
 
   <mat-form-field appearance="outline" class="dateField">
     <input
-      matInput
+      (dateChange)="onDatePicked($event.value)"
       [matDatepicker]="picker"
       [value]="selectedDate"
-      (dateChange)="onDatePicked($event.value)"
+      matInput
     />
-    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
@@ -116,9 +116,9 @@
 
 <div class="content">
   <app-calendar-grid
+    [isAdmin]="isAdmin"
+    [myEmployeeId]="myEmployeeId"
     [selectedDate]="selectedDateIso"
     [showOnlyMine]="viewMode === 'MINE'"
-    [myEmployeeId]="myEmployeeId"
-    [isAdmin]="isAdmin"
   ></app-calendar-grid>
 </div>

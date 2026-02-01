@@ -1,4 +1,4 @@
-import { bootstrapApplication } from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {App} from './app/app';
 import {provideRouter} from '@angular/router';
@@ -9,7 +9,7 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 bootstrapApplication(App, {
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     provideHttpClient(),
     provideRouter(routes),
     provideNativeDateAdapter()

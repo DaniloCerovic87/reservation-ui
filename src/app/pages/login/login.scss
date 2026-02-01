@@ -6,7 +6,7 @@
   padding: 18px;
 
   // lepša pozadina
-  background: radial-gradient(1200px 600px at 50% -10%, rgba(25,118,210,0.18), transparent 55%),
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(25, 118, 210, 0.18), transparent 55%),
   #f7f7fb;
 }
 
@@ -16,9 +16,8 @@
   padding: 22px 22px 18px;
 
   // “clean” shadow
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.10),
-    0 1px 2px rgba(0,0,0,0.06) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10),
+  0 1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
 .header {
@@ -55,13 +54,13 @@
   display: flex;
   justify-content: center;
 
-  margin-top: 10px;   // malo ispod subtitle
+  margin-top: 10px; // malo ispod subtitle
   margin-bottom: 2px; // skoro bez razmaka ka username polju
 }
 
 .err {
   width: 100%;
-  padding: 8px 12px;  // malo tanje da ne bude “teška”
+  padding: 8px 12px; // malo tanje da ne bude “teška”
   border-radius: 14px;
 
   border: 1px solid rgba(211, 47, 47, 0.35);

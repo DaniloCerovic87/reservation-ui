@@ -4,7 +4,7 @@ import {DayGrid} from './pages/calendar/components/day-grid/day-grid';
 import {authGuard} from './core/auth/auth.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
-  { path: '', component: DayGrid, canActivate: [authGuard] },
-  { path: '**', redirectTo: '' },
+  {path: 'login', component: Login},
+  {path: '', component: DayGrid, canActivate: [authGuard]},
+  {path: '**', redirectTo: ''},
 ];

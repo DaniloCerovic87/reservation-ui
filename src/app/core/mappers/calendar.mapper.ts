@@ -1,5 +1,5 @@
-import { CalendarEntryResponse } from '../responses/calendar-entry.response';
-import { ReservationBlock, ReservationStatus, ReservationType } from '../models/reservation-block';
+import {CalendarEntryResponse} from '../responses/calendar-entry.response';
+import {ReservationBlock, ReservationStatus, ReservationType} from '../models/reservation-block';
 import {ReservationCreatedResponse} from '../responses/reservation-created.response';
 
 const STATUSES: ReservationStatus[] = ['PENDING', 'APPROVED', 'DECLINED'];

@@ -1,23 +1,17 @@
-import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import {
-  FormControl,
-  FormGroup,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { finalize } from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators,} from '@angular/forms';
+import {finalize} from 'rxjs';
 
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 
-import { RoomResponse } from '../../../../core/responses/room.response';
-import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
+import {RoomResponse} from '../../../../core/responses/room.response';
+import {CreateReservationRequest} from '../../../../core/requests/create-reservation.request';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
@@ -82,6 +76,19 @@ export class ReserveRoomsDialogComponent implements OnInit {
     });
   }
 
+  get canSave(): boolean {
+    return (
+      this.form.valid &&
+      this.selected.size > 0 &&
+      !this.saving &&
+      !this.availabilityFailed
+    );
+  }
+
+  get rangeLabel(): string {
+    return `${this.fmt(this.data.startTime)} → ${this.fmt(this.data.endTime)}`;
+  }
+
   ngOnInit() {
     this.loading = false;
     this.errorMsg = null;
@@ -101,30 +108,6 @@ export class ReserveRoomsDialogComponent implements OnInit {
     }
   }
 
-  get canSave(): boolean {
-    return (
-      this.form.valid &&
-      this.selected.size > 0 &&
-      !this.saving &&
-      !this.availabilityFailed
-    );
-  }
-
-  get rangeLabel(): string {
-    return `${this.fmt(this.data.startTime)} → ${this.fmt(this.data.endTime)}`;
-  }
-
-  private fmt(s: string): string {
-    // "2026-01-19T08:30:00" -> "19.01.2026 08:30"
-    const [d, t] = s.split('T');
-    if (!d || !t) return s;
-
-    const [y, m, day] = d.split('-');
-    if (!y || !m || !day) return s;
-
-    return `${day}.${m}.${y} ${t.slice(0, 5)}`;
-  }
-
   isInvalid(name: keyof ReserveForm['controls']): boolean {
     const c = this.form.controls[name];
     return c.invalid && (this.submitted || c.touched);
@@ -140,7 +123,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close({ saved: false });
+    this.dialogRef.close({saved: false});
   }
 
   save() {
@@ -172,12 +155,23 @@ export class ReserveRoomsDialogComponent implements OnInit {
       .createReservation(req)
       .pipe(finalize(() => (this.saving = false)))
       .subscribe({
-        next: (created) => this.dialogRef.close({ saved: true, created }),
+        next: (created) => this.dialogRef.close({saved: true, created}),
         error: (e) => {
           this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.');
         }
 
       });
 
+  }
+
+  private fmt(s: string): string {
+    // "2026-01-19T08:30:00" -> "19.01.2026 08:30"
+    const [d, t] = s.split('T');
+    if (!d || !t) return s;
+
+    const [y, m, day] = d.split('-');
+    if (!y || !m || !day) return s;
+
+    return `${day}.${m}.${y} ${t.slice(0, 5)}`;
   }
 }

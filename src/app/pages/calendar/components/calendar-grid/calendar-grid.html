@@ -1,4 +1,4 @@
-<div class="calWrap" [class.selecting]="isSelecting">
+<div [class.selecting]="isSelecting" class="calWrap">
   @if (isInitialLoading) {
     <div class="cal__loadingOverlay">
       <div class="spinner"></div>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-} @else {
+  } @else {
     <div class="cal" [ngStyle]="{ '--slots': slotsCss, '--past-slots': pastSlotsCss }">
       <div class="cal__header">
         <div class="cal__corner"></div>

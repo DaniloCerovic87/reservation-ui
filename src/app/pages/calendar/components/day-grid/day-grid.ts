@@ -1,24 +1,24 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component, DestroyRef, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
-import { Observable } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {Observable} from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import { CalendarGrid } from '../calendar-grid/calendar-grid';
-import { CurrentUser } from '../../../../core/models/current-user';
-import { AuthApi } from '../../../../core/auth/auth-api';
+import {CalendarGrid} from '../calendar-grid/calendar-grid';
+import {CurrentUser} from '../../../../core/models/current-user';
+import {AuthApi} from '../../../../core/auth/auth-api';
 
 type ViewMode = 'ALL' | 'MINE';
 
@@ -44,17 +44,13 @@ type ViewMode = 'ALL' | 'MINE';
   styleUrls: ['./day-grid.scss'],
 })
 export class DayGrid {
-  private destroyRef = inject(DestroyRef);
-
   user$!: Observable<CurrentUser | null>;
-
   viewMode: ViewMode = 'ALL';
-
   selectedDateIso = this.toIsoDate(new Date());
   selectedDate: Date = new Date();
-
   myEmployeeId = 0;
   isAdmin = false;
+  private destroyRef = inject(DestroyRef);
 
   constructor(private auth: AuthApi) {
 
@@ -65,7 +61,7 @@ export class DayGrid {
     this.myEmployeeId = u?.employeeId ?? 0;
 
     console.log("Da li je admin: ", this.isAdmin);
-    this.isAdmin =u?.role === 'ADMIN';
+    this.isAdmin = u?.role === 'ADMIN';
     if (this.isAdmin) this.viewMode = 'ALL';
 
     if (!this.myEmployeeId) this.viewMode = 'ALL';

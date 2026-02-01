@@ -1,13 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
-import { finalize } from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {Component, Inject} from '@angular/core';
+import {finalize} from 'rxjs';
 
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatDividerModule} from '@angular/material/divider';
 
-import { ReservationBlock } from '../../../../core/models/reservation-block';
-import { ReservationApiService } from '../../../../core/services/reservation-api';
+import {ReservationBlock} from '../../../../core/models/reservation-block';
+import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
 
 export interface AdminReviewDialogData {
@@ -33,7 +33,8 @@ export class AdminReviewReservationDialog {
     @Inject(MAT_DIALOG_DATA) public readonly data: AdminReviewDialogData,
     private readonly dialogRef: MatDialogRef<AdminReviewReservationDialog, AdminReviewDialogResult>,
     private readonly reservationApi: ReservationApiService
-  ) {}
+  ) {
+  }
 
   hhmm(iso: string) {
     return iso.substring(11, 16);
@@ -67,7 +68,7 @@ export class AdminReviewReservationDialog {
     call$
       .pipe(finalize(() => (this.saving = false)))
       .subscribe({
-        next: () => this.dialogRef.close({ action }),
+        next: () => this.dialogRef.close({action}),
         error: (e) => {
           this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.')
         }

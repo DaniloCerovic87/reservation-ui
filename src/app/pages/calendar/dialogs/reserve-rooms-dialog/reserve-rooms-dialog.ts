@@ -20,6 +20,7 @@ import { RoomResponse } from '../../../../core/responses/room.response';
 import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
+import {ApiErrorMapper} from '../../../../core/utils/api-error';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
@@ -173,24 +174,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
       .subscribe({
         next: (created) => this.dialogRef.close({ saved: true, created }),
         error: (e) => {
-          if (e?.status >= 500 && e?.status < 600) {
-            this.errorMsg = 'Server error. Please try again later.';
-            return;
-          }
-
-          const errs = e?.error?.errors;
-
-          if (Array.isArray(errs) && errs.length > 0) {
-            this.errorMsg = errs.join('\n');
-            return;
-          }
-
-          if (e?.error?.debugMessage) {
-            this.errorMsg = e.error.debugMessage;
-            return;
-          }
-
-          this.errorMsg = 'Save failed.';
+          this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.');
         }
 
       });

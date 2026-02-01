@@ -3,7 +3,6 @@
   max-width: 100%;
 }
 
-/* Sam sadržaj */
 .title {
   display: flex;
   flex-direction: column;
@@ -105,7 +104,7 @@
   padding: 8px 2px;
 }
 
-/* form inputi jedan ispod drugog */
+/* form input one below the other */
 .form {
   display: flex !important;
   flex-direction: column !important;
@@ -126,7 +125,7 @@
 @media (max-width: 640px) {
   .form {
     display: grid;
-    grid-template-columns: 1fr;  /* <- jedno ispod drugog */
+    grid-template-columns: 1fr;  /* <- one below the other */
     gap: 12px;
   }
 }

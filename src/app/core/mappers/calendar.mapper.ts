@@ -35,8 +35,8 @@ export function toReservationBlock(e: CalendarEntryResponse): ReservationBlock {
 }
 
 /**
- * Create response returns ONE reservation with multiple roomIds.
- * Grid needs ONE block per room, so we split it here.
+ * Create response returns ONE reservation with multiple roomIds
+ * Split here because grid needs ONE block per room
  */
 export function toReservationBlocksFromCreate(
   created: ReservationCreatedResponse,

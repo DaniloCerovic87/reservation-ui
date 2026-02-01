@@ -20,3 +20,18 @@
   font-size: 14px;
   font-weight: 500;
 }
+
+.errorBanner {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  background: rgba(211, 47, 47, 0.12);
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  color: #b71c1c;
+
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: pre-line; // da \n radi
+}
+

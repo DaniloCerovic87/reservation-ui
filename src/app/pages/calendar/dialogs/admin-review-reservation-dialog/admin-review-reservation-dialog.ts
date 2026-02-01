@@ -1,42 +1,38 @@
-import { Component, Inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { Component, Inject } from '@angular/core';
+import { finalize } from 'rxjs';
 
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { ReservationBlock } from '../../../../core/models/reservation-block';
-
-export type AdminReviewAction = 'APPROVE' | 'DECLINE';
+import { ReservationApiService } from '../../../../core/services/reservation-api';
+import {ApiErrorMapper} from '../../../../core/utils/api-error';
 
 export interface AdminReviewDialogData {
   reservation: ReservationBlock;
 }
 
 export interface AdminReviewDialogResult {
-  action: AdminReviewAction;
+  action: 'APPROVE' | 'DECLINE';
 }
 
 @Component({
   standalone: true,
   selector: 'app-admin-review-reservation-dialog',
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDividerModule,
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatDividerModule],
   templateUrl: './admin-review-reservation-dialog.html',
   styleUrls: ['./admin-review-reservation-dialog.scss'],
 })
 export class AdminReviewReservationDialog {
-  readonly submitting = signal(false);
+  saving = false;
+  errorMsg: string | null = null;
 
   constructor(
-    private dialogRef: MatDialogRef<AdminReviewReservationDialog, AdminReviewDialogResult>,
-    @Inject(MAT_DIALOG_DATA) public data: AdminReviewDialogData
+    @Inject(MAT_DIALOG_DATA) public readonly data: AdminReviewDialogData,
+    private readonly dialogRef: MatDialogRef<AdminReviewReservationDialog, AdminReviewDialogResult>,
+    private readonly reservationApi: ReservationApiService
   ) {}
 
   hhmm(iso: string) {
@@ -48,10 +44,33 @@ export class AdminReviewReservationDialog {
   }
 
   approve() {
-    this.dialogRef.close({ action: 'APPROVE' });
+    this.submit('APPROVE');
   }
 
   decline() {
-    this.dialogRef.close({ action: 'DECLINE' });
+    this.submit('DECLINE');
+  }
+
+  private submit(action: 'APPROVE' | 'DECLINE') {
+    if (this.saving) return;
+
+    this.saving = true;
+    this.errorMsg = null;
+
+    const id = this.data.reservation.reservationId;
+
+    const call$ =
+      action === 'APPROVE'
+        ? this.reservationApi.approveReservation(id)
+        : this.reservationApi.declineReservation(id);
+
+    call$
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe({
+        next: () => this.dialogRef.close({ action }),
+        error: (e) => {
+          this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.')
+        }
+      });
   }
 }

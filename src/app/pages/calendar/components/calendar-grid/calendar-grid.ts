@@ -314,7 +314,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     this.selectionEndSlot = end;
   };
 
-  // MODAL OPEN AFTER API CALL
+  // open modal after api call
   private onWindowMouseUp = (_ev: MouseEvent) => {
     if (!this.isSelecting) {
       return;
@@ -584,32 +584,14 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
       data: { reservation: r },
     });
 
-    ref.afterClosed().subscribe((res: { action?: 'APPROVE' | 'DECLINE' } | undefined) => {
-      if (!res?.action){
-        return;
+    ref.afterClosed().subscribe((res: { action: 'APPROVE' | 'DECLINE' } | undefined) => {
+      if (!res?.action) return;
+
+      if (res.action === 'APPROVE') {
+        this.patchReservationStatus(r.reservationId, 'APPROVED');
+      } else {
+        this.removeReservationFromGrid(r.reservationId); // DECLINED should not be shown
       }
-
-      const id = r.reservationId;
-
-      const call$ =
-        res.action === 'APPROVE'
-          ? this.reservationApi.approveReservation(id)
-          : this.reservationApi.declineReservation(id);
-
-      call$.subscribe({
-        next: () => {
-          // eventual consistency
-          if (res.action === 'APPROVE') {
-            this.patchReservationStatus(r.reservationId, 'APPROVED');
-          } else {
-            this.removeReservationFromGrid(r.reservationId);
-          }
-        },
-        error: (err) => {
-          console.error('Approve/decline failed', err);
-          // TODO error handling
-        },
-      });
     });
   }
 

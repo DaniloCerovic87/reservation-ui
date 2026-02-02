@@ -3,5 +3,34 @@
   "FILTER_MINE": "Moje",
   "TODAY": "Danas",
   "TOOLTIP_LOGGED_IN": "Ulogovan",
-  "LOGOUT": "Odjava"
+  "LOGOUT": "Odjava",
+
+  "RESERVATION_NEW_TITLE": "Nova rezervacija",
+  "RESERVATION_LOADING_ROOMS": "Učitavanje dostupnih sala...",
+  "RESERVATION_CHOOSE_ROOMS": "Izaberi sale",
+  "RESERVATION_SELECTED": "izabrano",
+  "RESERVATION_AVAILABILITY_UNAVAILABLE": "Provera dostupnosti trenutno nije dostupna. Pokušajte ponovo kasnije.",
+  "RESERVATION_NO_ROOMS_FOR_RANGE": "Nema dostupnih sala za izabrani vremenski period.",
+
+  "RESERVATION_SEATS": "Mesta",
+  "RESERVATION_PCS": "Računari",
+  "RESERVATION_SMARTBOARD": "Pametna tabla",
+  "RESERVATION_PROJECTORS": "Projektori",
+
+  "RESERVATION_NAME_LABEL": "Naziv rezervacije",
+  "RESERVATION_ERR_NAME_REQUIRED": "Naziv je obavezan.",
+  "RESERVATION_ERR_NAME_MINLEN": "Minimum 2 karaktera.",
+
+  "RESERVATION_TYPE_LABEL": "Tip rezervacije",
+  "RESERVATION_ERR_TYPE_REQUIRED": "Tip je obavezan.",
+
+  "RESERVATION_TYPE_BASIC": "Osnovne",
+  "RESERVATION_TYPE_MASTER": "Master",
+  "RESERVATION_TYPE_SPECIALIST": "Specijalističke",
+  "RESERVATION_TYPE_DOCTORAL": "Doktorske",
+
+  "COMMON_YES": "Da",
+  "COMMON_NO": "Ne",
+  "COMMON_CANCEL": "Otkaži",
+  "COMMON_SAVE": "Sačuvaj"
 }

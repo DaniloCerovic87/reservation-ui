@@ -15,6 +15,7 @@ import {CreateReservationRequest} from '../../../../core/requests/create-reserva
 import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
+import {TPipe} from '../../../../core/i18n/t.pipe';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
@@ -47,6 +48,7 @@ type ReserveForm = FormGroup<{
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    TPipe,
   ],
   templateUrl: './reserve-rooms-dialog.html',
   styleUrls: ['./reserve-rooms-dialog.scss'],

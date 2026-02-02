@@ -3,5 +3,34 @@
   "FILTER_MINE": "Mine",
   "TODAY": "Today",
   "TOOLTIP_LOGGED_IN": "Logged in",
-  "LOGOUT": "Logout"
+  "LOGOUT": "Logout",
+
+  "RESERVATION_NEW_TITLE": "New reservation",
+  "RESERVATION_LOADING_ROOMS": "Loading available rooms...",
+  "RESERVATION_CHOOSE_ROOMS": "Choose rooms",
+  "RESERVATION_SELECTED": "selected",
+  "RESERVATION_AVAILABILITY_UNAVAILABLE": "Availability is currently unavailable. Please try again later.",
+  "RESERVATION_NO_ROOMS_FOR_RANGE": "No available rooms for this time range.",
+
+  "RESERVATION_SEATS": "Seats",
+  "RESERVATION_PCS": "PCs",
+  "RESERVATION_SMARTBOARD": "Smartboard",
+  "RESERVATION_PROJECTORS": "Projectors",
+
+  "RESERVATION_NAME_LABEL": "Reservation name",
+  "RESERVATION_ERR_NAME_REQUIRED": "Name is required.",
+  "RESERVATION_ERR_NAME_MINLEN": "Min 2 characters.",
+
+  "RESERVATION_TYPE_LABEL": "Reservation type",
+  "RESERVATION_ERR_TYPE_REQUIRED": "Type is required.",
+
+  "RESERVATION_TYPE_BASIC": "Basic",
+  "RESERVATION_TYPE_MASTER": "Master",
+  "RESERVATION_TYPE_SPECIALIST": "Specialist",
+  "RESERVATION_TYPE_DOCTORAL": "Doctoral",
+
+  "COMMON_YES": "Yes",
+  "COMMON_NO": "No",
+  "COMMON_CANCEL": "Cancel",
+  "COMMON_SAVE": "Save"
 }

@@ -1,11 +1,11 @@
 <h2 class="title" mat-dialog-title>
-  New reservation
+  {{ 'RESERVATION_NEW_TITLE' | t }}
   <span class="subtitle">{{ rangeLabel }}</span>
 </h2>
 
 <div class="content" mat-dialog-content>
   @if (loading) {
-    <div class="info loading">Loading available rooms...</div>
+    <div class="info loading">{{ 'RESERVATION_LOADING_ROOMS' | t }}</div>
   }
 
   @if (errorMsg) {
@@ -15,19 +15,19 @@
   @if (!loading) {
     <div class="roomsBox">
       <div class="roomsHeader">
-        <span class="roomsTitle">Choose rooms</span>
+        <span class="roomsTitle">{{ 'RESERVATION_CHOOSE_ROOMS' | t }}</span>
 
         @if (rooms.length) {
-          <span class="roomsHint">{{ selected.size }} selected</span>
+          <span class="roomsHint">{{ selected.size }} {{ 'RESERVATION_SELECTED' | t }}</span>
         }
       </div>
 
       @if (rooms.length === 0) {
         <div class="empty">
           @if (availabilityFailed) {
-            Availability is currently unavailable. Please try again later.
+            {{ 'RESERVATION_AVAILABILITY_UNAVAILABLE' | t }}
           } @else {
-            No available rooms for this time range.
+            {{ 'RESERVATION_NO_ROOMS_FOR_RANGE' | t }}
           }
         </div>
       } @else {
@@ -43,27 +43,27 @@
               </div>
               <div class="roomLine2">
                 @if (r.capacity != null) {
-                  <span class="chip">Seats: {{ r.capacity }}</span>
+                  <span class="chip">{{ 'RESERVATION_SEATS' | t }}: {{ r.capacity }}</span>
                 }
 
                 <!-- COMPUTER_ROOM -->
                 @if (r.roomType === 'Computer Room') {
                   @if (r.numberOfComputers != null) {
-                    <span class="chip">PCs: {{ r.numberOfComputers }}</span>
+                    <span class="chip">{{ 'RESERVATION_PCS' | t }}: {{ r.numberOfComputers }}</span>
                   }
                 }
 
                 <!-- CLASSROOM -->
                 @if (r.roomType === 'Classroom') {
                   @if (r.hasSmartBoard != null) {
-                    <span class="chip">Smartboard: {{ r.hasSmartBoard ? 'Yes' : 'No' }}</span>
+                    <span class="chip">{{ 'RESERVATION_SMARTBOARD' | t }}:  {{ r.hasSmartBoard ? ('COMMON_YES' | t) : ('COMMON_NO' | t) }}</span>
                   }
                 }
 
                 <!-- AMPHITHEATER -->
                 @if (r.roomType === 'Amphitheater') {
                   @if (r.numberOfProjectors != null) {
-                    <span class="chip">Projectors: {{ r.numberOfProjectors }}</span>
+                    <span class="chip">{{ 'RESERVATION_PROJECTORS' | t }}: {{ r.numberOfProjectors }}</span>
                   }
                 }
               </div>
@@ -76,40 +76,40 @@
 
   <form [formGroup]="form" class="form">
     <mat-form-field appearance="outline">
-      <mat-label>Reservation name</mat-label>
+      <mat-label>{{ 'RESERVATION_NAME_LABEL' | t }}</mat-label>
       <input formControlName="reservationName" matInput/>
       @if (isInvalid('reservationName') && hasError('reservationName', 'required')) {
-        <mat-error>Name is required.</mat-error>
+        <mat-error>{{ 'RESERVATION_ERR_NAME_REQUIRED' | t }}</mat-error>
       }
       @if (isInvalid('reservationName') && hasError('reservationName', 'minlength')) {
-        <mat-error>Min 2 characters.</mat-error>
+        <mat-error>{{ 'RESERVATION_ERR_NAME_MINLEN' | t }}</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Reservation type</mat-label>
+      <mat-label>{{ 'RESERVATION_TYPE_LABEL' | t }}</mat-label>
       <mat-select formControlName="reservationType">
-        <mat-option value="BASIC">BASIC</mat-option>
-        <mat-option value="MASTER">MASTER</mat-option>
-        <mat-option value="SPECIALIST">SPECIALIST</mat-option>
-        <mat-option value="DOCTORAL">DOCTORAL</mat-option>
+        <mat-option value="BASIC">{{ 'RESERVATION_TYPE_BASIC' | t }}</mat-option>
+        <mat-option value="MASTER">{{ 'RESERVATION_TYPE_MASTER' | t }}</mat-option>
+        <mat-option value="SPECIALIST">{{ 'RESERVATION_TYPE_SPECIALIST' | t }}</mat-option>
+        <mat-option value="DOCTORAL">{{ 'RESERVATION_TYPE_DOCTORAL' | t }}</mat-option>
       </mat-select>
 
       @if (isInvalid('reservationType')) {
-        <mat-error>Type is required.</mat-error>
+        <mat-error>{{ 'RESERVATION_ERR_TYPE_REQUIRED' | t }}</mat-error>
       }
     </mat-form-field>
   </form>
 </div>
 
 <div class="actions" mat-dialog-actions>
-  <button (click)="close()" mat-button>Cancel</button>
+  <button (click)="close()" mat-button>{{ 'COMMON_CANCEL' | t }}</button>
   <button
     (click)="save()"
     [disabled]="saving || !canSave"
     color="primary"
     mat-raised-button
   >
-    Save
+    {{ 'COMMON_SAVE' | t }}
   </button>
 </div>

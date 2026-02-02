@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject} from '@angular/core';
+import {Component, computed, DestroyRef, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
@@ -19,8 +19,11 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CalendarGrid} from '../calendar-grid/calendar-grid';
 import {CurrentUser} from '../../../../core/models/current-user';
 import {AuthApi} from '../../../../core/auth/auth-api';
+import {I18nService} from '../../../../core/i18n/I18n.service';
+import {TPipe} from '../../../../core/i18n/t.pipe';
 
 type ViewMode = 'ALL' | 'MINE';
+type Lang = 'sr' | 'en';
 
 @Component({
   standalone: true,
@@ -39,6 +42,7 @@ type ViewMode = 'ALL' | 'MINE';
     MatDividerModule,
     MatTooltipModule,
     CalendarGrid,
+    TPipe
   ],
   templateUrl: './day-grid.html',
   styleUrls: ['./day-grid.scss'],
@@ -51,8 +55,10 @@ export class DayGrid {
   myEmployeeId = 0;
   isAdmin = false;
   private destroyRef = inject(DestroyRef);
+  lang: Lang = this.readLang();
+  isLang = (l: 'sr' | 'en') => this.i18n.lang() === l;
 
-  constructor(private auth: AuthApi) {
+  constructor(private auth: AuthApi, private i18n: I18nService) {
 
     this.user$ = this.auth.currentUser$();
 
@@ -122,4 +128,29 @@ export class DayGrid {
     const day = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   }
+
+  // ===== LANGUAGE =====
+  setLang(lang: Lang) {
+    if (this.lang === lang) {
+      return;
+    }
+
+    this.lang = lang;
+    localStorage.setItem('app_lang', lang);
+
+    void this.i18n.setLang(lang);
+  }
+
+  private readLang(): Lang {
+    const v = (localStorage.getItem('app_lang') || '').toLowerCase();
+    return v === 'en' ? 'en' : 'sr';
+  }
+
+  currentLangShort = computed(() => this.i18n.lang().toUpperCase()); // SR / EN
+
+  currentLangLabel = computed(() =>
+    this.i18n.lang() === 'sr' ? 'Srpski' : 'English'
+  );
+
+
 }

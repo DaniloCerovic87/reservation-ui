@@ -1,51 +1,92 @@
 :host {
   display: flex;
   flex-direction: column;
-
-  /* safest: avoids layout collapse if parent height chain isn't set */
-  height: 100vh;
+  height: 100%;
   min-height: 0;
 }
 
-/* Toolbar stays sticky at the top */
+/* Toolbar: 3-zone GRID (no spacers => no layout shift) */
 .toolbar {
   position: sticky;
   top: 0;
   z-index: 10;
 
-  overflow: visible;
-
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* left | center | right */
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
 
-  height: auto;
+  height: 72px;
   min-height: 72px;
-  padding: 8px 16px;
+
+  /* no vertical padding => easier perfect centering */
+  padding: 0 16px;
   box-sizing: border-box;
 
+  overflow: visible;
   background: var(--mat-sys-surface);
 }
 
+/* 3 zones fill toolbar height and center contents */
+.tbLeft,
+.tbCenter,
+.tbRight {
+  height: 100%;
+  display: inline-flex;
+  align-items: center; /* ✅ vertical centering */
+  gap: 8px;
+  min-width: 0;
+}
+
+.tbCenter {
+  justify-self: center; /* ✅ center never moves */
+}
+
+/* remove any spacer usage (template still has them -> ignore) */
 .spacer {
-  flex: 1 1 auto;
+  display: none !important;
 }
 
-.filterGroup {
-  align-self: center;
-}
-
-/* Datepicker visual alignment */
+/* Datepicker field: stable width + no transform hacks */
 .dateField {
   width: 220px;
-  align-self: center;
-  transform: translateY(12px);
+  min-width: 220px;
+  max-width: 220px;
+  margin-top: 16px;
 }
 
-/* ===== User button ===== */
+/* Fine-tune Material form-field vertical alignment (MDC / Angular Material 15+) */
+.dateField .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+.dateField .mat-mdc-text-field-wrapper {
+  height: 40px; /* align with buttons */
+}
+
+.dateField .mat-mdc-form-field-infix {
+  padding-top: 9px;
+  padding-bottom: 7px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+/* USER menu items (non-clickable header/role) */
+.userMenuItem--header,
+.userMenuItem--role {
+  cursor: default;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.userMenuItem--header:hover,
+.userMenuItem--role:hover {
+  background: transparent;
+}
+
+/* USER button */
 .userBtn {
-  align-self: center;
-  transform: translateY(10px);
   margin-left: 6px;
   border-radius: 999px;
 }
@@ -58,57 +99,34 @@
   opacity: 0.5;
 }
 
-/* wrapper for avatar */
-.userIconWrap {
+/* LANGUAGE button: stable width (prevents pushing neighbors) */
+.langBtn {
+  min-width: 88px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  line-height: 40px;
 }
 
-/* SVG avatar sizing */
-.userAvatar {
-  display: block;
-}
-
-/* ===== Menu hooks ===== */
-.userMenu {
-  /* mat-menu panel styling often requires global styles; keep as hook */
-}
-
-.userMenuItem {
-  display: flex;
-  align-items: center;
-}
-
-.userMenuItem--header {
-  opacity: 1 !important; /* disabled items are dimmed */
-}
-
-.userMenuItem--role {
-  cursor: default;
-}
-
-.userMenuItem--role:hover {
-  background: transparent;
-}
-
-.userMenuItem--logout {
+.langCode {
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  margin-left: 6px;
   font-weight: 600;
 }
 
-.userMenuIcon {
+/* menu check icon should not shift menu items */
+.langCheck {
   margin-right: 8px;
 }
 
-.userMenuText {
-  white-space: nowrap;
+.langCheck--hidden {
+  visibility: hidden; /* keeps space, hides icon */
 }
 
-.userMenuDivider {
-  margin: 6px 0;
-}
-
-/* Content area must fill remaining height */
+/* Content area must allow calendar to fill remaining height */
 .content {
   flex: 1;
   min-height: 0;
@@ -120,21 +138,9 @@
   flex-direction: column;
 }
 
-/* Calendar grid must be allowed to grow/shrink */
+/* Let the calendar grid expand/shrink inside flex layout */
 .content > app-calendar-grid {
   flex: 1;
   min-height: 0;
   display: block;
-}
-
-/* Small screens */
-@media (max-width: 900px) {
-  .toolbar {
-    gap: 8px;
-    padding: 8px 12px;
-  }
-
-  .dateField {
-    width: 180px;
-  }
 }

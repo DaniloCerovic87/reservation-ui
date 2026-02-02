@@ -1,117 +1,144 @@
 <mat-toolbar class="toolbar" color="primary">
-  <button (click)="prevDay()" aria-label="Previous day" mat-icon-button>
-    <mat-icon>chevron_left</mat-icon>
-  </button>
 
-  <button (click)="today()" mat-button>Today</button>
-
-  <button (click)="nextDay()" aria-label="Next day" mat-icon-button>
-    <mat-icon>chevron_right</mat-icon>
-  </button>
-
-  <span class="spacer"></span>
-
-  <mat-button-toggle-group
-    [(ngModel)]="viewMode"
-    aria-label="Filter rezervacija"
-    class="filterGroup"
-  >
-    <mat-button-toggle value="ALL">Sve</mat-button-toggle>
-
-    @if (!isAdmin) {
-      <mat-button-toggle value="MINE">Moje</mat-button-toggle>
-    }
-  </mat-button-toggle-group>
-
-
-  <span class="spacer"></span>
-
-  <mat-form-field appearance="outline" class="dateField">
-    <input
-      (dateChange)="onDatePicked($event.value)"
-      [matDatepicker]="picker"
-      [value]="selectedDate"
-      matInput
-    />
-    <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
-
-  <!-- USER (SVG avatar, no name in toolbar) -->
-  @if (user$ | async; as u) {
-    <button
-      mat-icon-button
-      class="userBtn"
-      [matMenuTriggerFor]="userMenu"
-      aria-label="Account"
-      matTooltip="Ulogovan"
-    >
-      <span class="userIconWrap">
-        <svg
-          class="userAvatar"
-          width="32"
-          height="32"
-          viewBox="0 0 32 32"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <circle cx="16" cy="16" r="15" fill="#EEF2F5"></circle>
-          <circle cx="16" cy="12" r="4.5" fill="#7A7F86"></circle>
-          <path
-            d="M8.2 26.0c1.7-4.6 5.0-6.9 7.8-6.9s6.1 2.3 7.8 6.9"
-            fill="#7A7F86"
-            opacity="0.96"
-          ></path>
-          <circle cx="24.2" cy="24.8" r="4.0" fill="#22c55e" stroke="#EEF2F5" stroke-width="2"></circle>
-        </svg>
-      </span>
+  <!-- LEFT -->
+  <div class="tbLeft">
+    <button (click)="prevDay()" aria-label="Previous day" mat-icon-button>
+      <mat-icon>chevron_left</mat-icon>
     </button>
 
-    <mat-menu
-      #userMenu="matMenu"
-      xPosition="before"
-      yPosition="below"
-      class="userMenu"
+    <button (click)="today()" mat-button>{{ 'TODAY' | t }}</button>
+
+    <button (click)="nextDay()" aria-label="Next day" mat-icon-button>
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <!-- CENTER -->
+  <div class="tbCenter">
+    <mat-button-toggle-group
+      [(ngModel)]="viewMode"
+      aria-label="Filter rezervacija"
+      class="filterGroup"
     >
-      <button mat-menu-item disabled class="userMenuItem userMenuItem--header">
-        <mat-icon class="userMenuIcon">person</mat-icon>
-        <span class="userMenuText">{{ u?.username ?? u?.email ?? 'User' }}</span>
+      <mat-button-toggle value="ALL">{{ 'FILTER_ALL' | t }}</mat-button-toggle>
+
+      @if (!isAdmin) {
+        <mat-button-toggle value="MINE">{{ 'FILTER_MINE' | t }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="tbRight">
+    <mat-form-field appearance="outline" class="dateField" subscriptSizing="fixed">
+      <input
+        (dateChange)="onDatePicked($event.value)"
+        [matDatepicker]="picker"
+        [value]="selectedDate"
+        matInput
+      />
+      <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- LANGUAGE (right after date picker, before user menu) -->
+    <button
+      mat-button
+      class="langBtn"
+      [matMenuTriggerFor]="langMenu"
+      aria-label="Change language"
+      [matTooltip]="currentLangLabel()"
+    >
+      <mat-icon>language</mat-icon>
+      <span class="langCode">{{ currentLangShort() }}</span>
+    </button>
+
+    <mat-menu #langMenu="matMenu" xPosition="before" yPosition="below">
+      <button mat-menu-item (click)="setLang('sr')">
+        <mat-icon class="langCheck" [class.langCheck--hidden]="!isLang('sr')">check</mat-icon>
+        <span>🇷🇸</span>&nbsp;<span>Srpski</span>
       </button>
 
-      <!-- Role (NOT disabled) -->
-      @if (u?.role) {
-        <button
-          mat-menu-item
-          class="userMenuItem userMenuItem--role"
-          (click)="$event.stopPropagation()"
-        >
-          <mat-icon class="userMenuIcon">verified_user</mat-icon>
-          <span class="userMenuText">{{ u.role }}</span>
-        </button>
-      }
-
-      <mat-divider class="userMenuDivider"></mat-divider>
-
-      <button
-        mat-menu-item
-        (click)="logout()"
-        class="userMenuItem userMenuItem--logout"
-      >
-        <mat-icon class="userMenuIcon">logout</mat-icon>
-        <span class="userMenuText">Logout</span>
+      <button mat-menu-item (click)="setLang('en')">
+        <mat-icon class="langCheck" [class.langCheck--hidden]="!isLang('en')">check</mat-icon>
+        <span>🇬🇧</span>&nbsp;<span>English</span>
       </button>
     </mat-menu>
-  } @else {
-    <!-- loading placeholder so layout doesn't jump -->
-    <button
-      mat-icon-button
-      class="userBtn userBtn--loading"
-      disabled
-      aria-label="Loading user"
-    >
-      <mat-icon>person_outline</mat-icon>
-    </button>
-  }
+
+    <!-- USER (SVG avatar, no name in toolbar) -->
+    @if (user$ | async; as u) {
+      <button
+        mat-icon-button
+        class="userBtn"
+        [matMenuTriggerFor]="userMenu"
+        aria-label="Account"
+        [matTooltip]="'TOOLTIP_LOGGED_IN' | t"
+      >
+        <span class="userIconWrap">
+          <svg
+            class="userAvatar"
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="16" cy="16" r="15" fill="#EEF2F5"></circle>
+            <circle cx="16" cy="12" r="4.5" fill="#7A7F86"></circle>
+            <path
+              d="M8.2 26.0c1.7-4.6 5.0-6.9 7.8-6.9s6.1 2.3 7.8 6.9"
+              fill="#7A7F86"
+              opacity="0.96"
+            ></path>
+            <circle cx="24.2" cy="24.8" r="4.0" fill="#22c55e" stroke="#EEF2F5" stroke-width="2"></circle>
+          </svg>
+        </span>
+      </button>
+
+      <mat-menu
+        #userMenu="matMenu"
+        xPosition="before"
+        yPosition="below"
+        class="userMenu"
+      >
+        <button mat-menu-item class="userMenuItem userMenuItem--header" (click)="$event.stopPropagation()">
+          <mat-icon class="userMenuIcon">person</mat-icon>
+          <span class="userMenuText">{{ u?.username ?? u?.email ?? 'User' }}</span>
+        </button>
+
+        @if (u?.role) {
+          <button
+            mat-menu-item
+            class="userMenuItem userMenuItem--role"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon class="userMenuIcon">verified_user</mat-icon>
+            <span class="userMenuText">{{ u.role }}</span>
+          </button>
+        }
+
+        <mat-divider class="userMenuDivider"></mat-divider>
+
+        <button
+          mat-menu-item
+          (click)="logout()"
+          class="userMenuItem userMenuItem--logout"
+        >
+          <mat-icon class="userMenuIcon">logout</mat-icon>
+          <span class="userMenuText">{{ 'LOGOUT' | t }}</span>
+        </button>
+      </mat-menu>
+    } @else {
+      <button
+        mat-icon-button
+        class="userBtn userBtn--loading"
+        disabled
+        aria-label="Loading user"
+      >
+        <mat-icon>person_outline</mat-icon>
+      </button>
+    }
+  </div>
 </mat-toolbar>
 
 <div class="content">

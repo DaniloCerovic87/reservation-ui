@@ -5,6 +5,18 @@
   "TOOLTIP_LOGGED_IN": "Ulogovan",
   "LOGOUT": "Odjava",
 
+  "RESERVATION_ERR_AVAILABILITY_LOAD": "Ne mogu da učitam dostupnost.",
+  "COMMON_ACTION_FAILED": "Akcija nije uspela.",
+  "COMMON_USER_NOT_LOADED": "Podaci o korisniku nisu dostupni. Prijavite se ponovo.",
+
+  "RESERVATION_REVIEW_TITLE": "Pregled rezervacije",
+  "RESERVATION_REVIEW_NAME": "Naziv",
+  "RESERVATION_REVIEW_EMPLOYEE": "Zaposleni",
+  "RESERVATION_REVIEW_ROOM": "Sala",
+  "RESERVATION_REVIEW_TIME": "Vreme",
+  "RESERVATION_REVIEW_DECLINE": "Odbij",
+  "RESERVATION_REVIEW_APPROVE": "Odobri",
+
   "RESERVATION_NEW_TITLE": "Nova rezervacija",
   "RESERVATION_LOADING_ROOMS": "Učitavanje dostupnih sala...",
   "RESERVATION_CHOOSE_ROOMS": "Izaberi sale",

@@ -5,6 +5,18 @@
   "TOOLTIP_LOGGED_IN": "Logged in",
   "LOGOUT": "Logout",
 
+  "RESERVATION_ERR_AVAILABILITY_LOAD": "Could not load availability.",
+  "COMMON_ACTION_FAILED": "Action failed.",
+  "COMMON_USER_NOT_LOADED": "User data is unavailable. Please sign in again.",
+
+  "RESERVATION_REVIEW_TITLE": "Review reservation",
+  "RESERVATION_REVIEW_NAME": "Name",
+  "RESERVATION_REVIEW_EMPLOYEE": "Employee",
+  "RESERVATION_REVIEW_ROOM": "Room",
+  "RESERVATION_REVIEW_TIME": "Time",
+  "RESERVATION_REVIEW_DECLINE": "Decline",
+  "RESERVATION_REVIEW_APPROVE": "Approve",
+
   "RESERVATION_NEW_TITLE": "New reservation",
   "RESERVATION_LOADING_ROOMS": "Loading available rooms...",
   "RESERVATION_CHOOSE_ROOMS": "Choose rooms",

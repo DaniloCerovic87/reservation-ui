@@ -9,6 +9,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {ReservationBlock} from '../../../../core/models/reservation-block';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
+import {TPipe} from '../../../../core/i18n/t.pipe';
 
 export interface AdminReviewDialogData {
   reservation: ReservationBlock;
@@ -21,7 +22,7 @@ export interface AdminReviewDialogResult {
 @Component({
   standalone: true,
   selector: 'app-admin-review-reservation-dialog',
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatDividerModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatDividerModule, TPipe],
   templateUrl: './admin-review-reservation-dialog.html',
   styleUrls: ['./admin-review-reservation-dialog.scss'],
 })

@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Review reservation</h2>
+<h2 mat-dialog-title>{{ 'RESERVATION_REVIEW_TITLE' | t }}</h2>
 
 <div mat-dialog-content>
   @if (errorMsg) {
@@ -7,22 +7,37 @@
     </div>
   }
 
-  <div class="row"><span class="label">Name</span><span>{{ data.reservation.reservationName }}</span></div>
-  <div class="row"><span class="label">Employee</span><span>{{ data.reservation.employeeName }}</span></div>
-  <div class="row"><span class="label">Room</span><span>{{ data.reservation.roomName }}</span></div>
-  <div class="row"><span class="label">Time</span>
+  <div class="row">
+    <span class="label">{{ 'RESERVATION_REVIEW_NAME' | t }}</span>
+    <span>{{ data.reservation.reservationName }}</span>
+  </div>
+
+  <div class="row">
+    <span class="label">{{ 'RESERVATION_REVIEW_EMPLOYEE' | t }}</span>
+    <span>{{ data.reservation.employeeName }}</span>
+  </div>
+
+  <div class="row">
+    <span class="label">{{ 'RESERVATION_REVIEW_ROOM' | t }}</span>
+    <span>{{ data.reservation.roomName }}</span>
+  </div>
+
+  <div class="row">
+    <span class="label">{{ 'RESERVATION_REVIEW_TIME' | t }}</span>
     <span>{{ hhmm(data.reservation.startTime) }}–{{ hhmm(data.reservation.endTime) }}</span>
   </div>
 </div>
 
 <div align="end" mat-dialog-actions>
-  <button (click)="close()" [disabled]="saving" mat-button>Cancel</button>
+  <button (click)="close()" [disabled]="saving" mat-button>
+    {{ 'COMMON_CANCEL' | t }}
+  </button>
 
   <button (click)="decline()" [disabled]="saving" mat-stroked-button>
-    Decline
+    {{ 'RESERVATION_REVIEW_DECLINE' | t }}
   </button>
 
   <button (click)="approve()" [disabled]="saving" color="primary" mat-flat-button>
-    Approve
+    {{ 'RESERVATION_REVIEW_APPROVE' | t }}
   </button>
 </div>

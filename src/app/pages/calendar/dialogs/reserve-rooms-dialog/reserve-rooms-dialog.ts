@@ -16,6 +16,8 @@ import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
 import {TPipe} from '../../../../core/i18n/t.pipe';
+import {AuthApi} from '../../../../core/auth/auth-api';
+import {I18nService} from '../../../../core/i18n/I18n.service';
 
 export interface ReserveRoomsDialogData {
   startTime: string;
@@ -70,7 +72,9 @@ export class ReserveRoomsDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public readonly data: ReserveRoomsDialogData,
     private readonly dialogRef: MatDialogRef<ReserveRoomsDialogComponent, ReserveRoomsDialogResult>,
     private readonly reservationApi: ReservationApiService,
-    private readonly fb: NonNullableFormBuilder
+    private readonly fb: NonNullableFormBuilder,
+    private readonly auth: AuthApi,
+    private readonly i18n: I18nService
   ) {
     this.form = this.fb.group({
       reservationName: this.fb.control('', [Validators.required, Validators.minLength(2)]),
@@ -99,7 +103,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
     this.rooms = this.data.availableRooms ?? [];
 
     if (this.availabilityFailed) {
-      this.errorMsg = 'Could not load availability.';
+      this.errorMsg = this.i18n.t('RESERVATION_ERR_AVAILABILITY_LOAD');
       this.selected.clear();
       return;
     }
@@ -139,8 +143,11 @@ export class ReserveRoomsDialogComponent implements OnInit {
     this.saving = true;
     this.errorMsg = null;
 
-    // TODO - to be fetched from token
-    const employeeId = 51;
+    const employeeId = this.auth.currentUser()?.employeeId;
+    if (!employeeId) {
+      this.errorMsg = this.i18n.t('COMMON_USER_NOT_LOADED');
+      return;
+    }
 
     const v = this.form.getRawValue();
 
@@ -159,7 +166,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
       .subscribe({
         next: (created) => this.dialogRef.close({saved: true, created}),
         error: (e) => {
-          this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.');
+          this.errorMsg = ApiErrorMapper.toMessage(e, this.i18n.t('COMMON_ACTION_FAILED'));
         }
 
       });

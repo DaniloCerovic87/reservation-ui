@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div class="cal__body" #bodyScroll (scroll)="onBodyScroll()">
+      <div class="cal__body" #bodyScroll (scroll)="onBodyScroll($event)">
         <div class="cal__timeCol">
           @for (t of times; track t) {
             <div class="timeTick" [class.timeTick--hour]="t.endsWith(':00')">

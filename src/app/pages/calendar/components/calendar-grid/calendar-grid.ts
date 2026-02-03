@@ -65,6 +65,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   slotMinutes = 15;
   slotPx = 28;
 
+  private headerEl: HTMLElement | null = null;
   private pendingStableCheck = false;
 
   constructor(
@@ -271,10 +272,19 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
       });
   }
 
-  onBodyScroll() {
-    if (!this.bodyScroll?.nativeElement || !this.headerRooms?.nativeElement) return;
+  onBodyScroll(e: Event) {
+    const bodyEl = e.target as HTMLElement;
 
-    this.headerRooms.nativeElement.scrollLeft = this.bodyScroll.nativeElement.scrollLeft;
+    // cache header element once
+    if (!this.headerEl) {
+      this.headerEl = bodyEl.closest('.cal')?.querySelector('.cal__headerRooms') as HTMLElement | null;
+    }
+
+    if (!this.headerEl) {
+      return;
+    }
+
+    this.headerEl.scrollLeft = bodyEl.scrollLeft;
   }
 
   reservationsForRoom(roomId: number) {

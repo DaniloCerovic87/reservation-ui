@@ -66,7 +66,6 @@ export class DayGrid {
     const u = this.auth.currentUser();
     this.myEmployeeId = u?.employeeId ?? 0;
 
-    console.log("Da li je admin: ", this.isAdmin);
     this.isAdmin = u?.role === 'ADMIN';
     if (this.isAdmin) this.viewMode = 'ALL';
 

@@ -17,6 +17,7 @@
   "RESERVATION_LOADING_ROOMS": "Učitavanje dostupnih sala...",
   "RESERVATION_CHOOSE_ROOMS": "Izaberi sale",
   "RESERVATION_SELECTED": "izabrano",
+  "PLEASE_TRY_AGAIN": "Pokušaj ponovo.",
 
   "RESERVATION_SEATS": "Mesta",
   "RESERVATION_PCS": "Računari",
@@ -57,10 +58,12 @@
     "API_SERVER_ERROR": "Došlo je do greške na serveru. Pokušajte ponovo.",
     "API_REQUEST_FAILED": "Zahtev nije uspeo.",
     "INTERNAL_SERVER_ERROR": "Došlo je do neočekivane greške. Molimo pokušajte ponovo kasnije.",
+    "BAD_REQUEST": "Neispravan zahtev.",
     "DOWNSTREAM_SERVICE_ERROR": "Sistem je trenutno nedostupan. Molimo pokušajte ponovo kasnije.",
 
     "VALIDATION_FAILED": "Zahtev nije ispravan.",
     "NOT_FOUND": "Traženi resurs nije pronađen.",
+    "UNABLE_TO_LOAD_ROOMS_TITLE": "Nije moguće učitati prostorije",
 
     "INVALID_STATUS_TRANSITION": "Rezervacija je već obrađena i ne može se ponovo menjati.",
     "EMPLOYEE_NOT_FOUND": "Zaposleni više ne postoji ili nije dostupan.",

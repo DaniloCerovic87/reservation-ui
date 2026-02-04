@@ -17,6 +17,7 @@
   "RESERVATION_LOADING_ROOMS": "Loading available rooms...",
   "RESERVATION_CHOOSE_ROOMS": "Choose rooms",
   "RESERVATION_SELECTED": "selected",
+  "PLEASE_TRY_AGAIN": "Please try again.",
 
   "RESERVATION_SEATS": "Seats",
   "RESERVATION_PCS": "PCs",
@@ -57,10 +58,12 @@
     "API_SERVER_ERROR": "Something went wrong. Please try again.",
     "API_REQUEST_FAILED": "Request failed.",
     "INTERNAL_SERVER_ERROR": "An unexpected error occurred. Please try again later.",
+    "BAD_REQUEST": "Bad request.",
     "DOWNSTREAM_SERVICE_ERROR": "The system is temporarily unavailable. Please try again later.",
 
     "VALIDATION_FAILED": "The request is not valid.",
     "NOT_FOUND": "The requested resource was not found.",
+    "UNABLE_TO_LOAD_ROOMS_TITLE": "Unable to load rooms",
 
     "INVALID_STATUS_TRANSITION": "This reservation has already been processed and cannot be changed again.",
     "EMPLOYEE_NOT_FOUND": "The employee no longer exists or is unavailable.",

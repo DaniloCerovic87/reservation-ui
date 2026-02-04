@@ -25,11 +25,14 @@ import {ReservationCreatedResponse} from '../../../../core/responses/reservation
 import {
   AdminReviewReservationDialog
 } from '../../dialogs/admin-review-reservation-dialog/admin-review-reservation-dialog';
+import {ApiErrorMapper} from '../../../../core/utils/api-error';
+import {I18nService} from '../../../../core/i18n/I18n.service';
+import {TPipe} from '../../../../core/i18n/t.pipe';
 
 @Component({
   standalone: true,
   selector: 'app-calendar-grid',
-  imports: [CommonModule],
+  imports: [CommonModule, TPipe],
   templateUrl: './calendar-grid.html',
   styleUrls: ['./calendar-grid.scss'],
 })
@@ -73,7 +76,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     private roomApi: RoomApiService,
     private reservationApi: ReservationApiService,
     private zone: NgZone,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private i18n: I18nService
   ) {
   }
 
@@ -259,8 +263,8 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
       .getDayEntries(date)
       .pipe(
         map((entries) => entries.map((e) => toReservationBlock(e))),
-        catchError(() => {
-          this.dayError = 'Calendar is currently unavailable.';
+        catchError((e) => {
+          this.dayError = ApiErrorMapper.toMessage(e, (k) => this.i18n.t(k));
           this.allReservations = [];
           return of([] as ReservationBlock[]);
         }),

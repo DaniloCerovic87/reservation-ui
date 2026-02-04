@@ -5,10 +5,6 @@
   "TOOLTIP_LOGGED_IN": "Ulogovan",
   "LOGOUT": "Odjava",
 
-  "RESERVATION_ERR_AVAILABILITY_LOAD": "Ne mogu da učitam dostupnost.",
-  "COMMON_ACTION_FAILED": "Akcija nije uspela.",
-  "COMMON_USER_NOT_LOADED": "Podaci o korisniku nisu dostupni. Prijavite se ponovo.",
-
   "RESERVATION_REVIEW_TITLE": "Pregled rezervacije",
   "RESERVATION_REVIEW_NAME": "Naziv",
   "RESERVATION_REVIEW_EMPLOYEE": "Zaposleni",
@@ -21,8 +17,6 @@
   "RESERVATION_LOADING_ROOMS": "Učitavanje dostupnih sala...",
   "RESERVATION_CHOOSE_ROOMS": "Izaberi sale",
   "RESERVATION_SELECTED": "izabrano",
-  "RESERVATION_AVAILABILITY_UNAVAILABLE": "Provera dostupnosti trenutno nije dostupna. Pokušajte ponovo kasnije.",
-  "RESERVATION_NO_ROOMS_FOR_RANGE": "Nema dostupnih sala za izabrani vremenski period.",
 
   "RESERVATION_SEATS": "Mesta",
   "RESERVATION_PCS": "Računari",
@@ -30,11 +24,7 @@
   "RESERVATION_PROJECTORS": "Projektori",
 
   "RESERVATION_NAME_LABEL": "Naziv rezervacije",
-  "RESERVATION_ERR_NAME_REQUIRED": "Naziv je obavezan.",
-  "RESERVATION_ERR_NAME_MINLEN": "Minimum 2 karaktera.",
-
   "RESERVATION_TYPE_LABEL": "Tip rezervacije",
-  "RESERVATION_ERR_TYPE_REQUIRED": "Tip je obavezan.",
 
   "RESERVATION_TYPE_BASIC": "Osnovne",
   "RESERVATION_TYPE_MASTER": "Master",
@@ -44,5 +34,55 @@
   "COMMON_YES": "Da",
   "COMMON_NO": "Ne",
   "COMMON_CANCEL": "Otkaži",
-  "COMMON_SAVE": "Sačuvaj"
+  "COMMON_SAVE": "Sačuvaj",
+
+  "ROOM_TYPE_AMPHITHEATER": "Amfiteatar",
+  "ROOM_TYPE_CLASSROOM": "Učionica",
+  "ROOM_TYPE_COMPUTER_ROOM": "Računarski kabinet",
+  "ROOM_TYPE_OTHER": "Ostalo",
+
+  "errors": {
+    "RESERVATION_ERR_NAME_REQUIRED": "Naziv je obavezan.",
+    "RESERVATION_ERR_NAME_MIN_LEN": "Minimum 2 karaktera.",
+    "RESERVATION_ERR_TYPE_REQUIRED": "Tip je obavezan.",
+
+    "RESERVATION_ERR_AVAILABILITY_LOAD": "Došlo je do greške prilikom učitavanja dostupnosti.",
+    "COMMON_ACTION_FAILED": "Akcija nije uspela.",
+    "COMMON_USER_NOT_LOADED": "Podaci o korisniku nisu dostupni. Prijavite se ponovo.",
+
+    "RESERVATION_AVAILABILITY_UNAVAILABLE": "Provera dostupnosti trenutno nije dostupna. Pokušajte ponovo kasnije.",
+    "RESERVATION_NO_ROOMS_FOR_RANGE": "Nema dostupnih sala za izabrani vremenski period.",
+
+    "API_NETWORK_ERROR": "Nema konekcije. Proverite internet i pokušajte ponovo.",
+    "API_SERVER_ERROR": "Došlo je do greške na serveru. Pokušajte ponovo.",
+    "API_REQUEST_FAILED": "Zahtev nije uspeo.",
+    "INTERNAL_SERVER_ERROR": "Došlo je do neočekivane greške. Molimo pokušajte ponovo kasnije.",
+    "DOWNSTREAM_SERVICE_ERROR": "Sistem je trenutno nedostupan. Molimo pokušajte ponovo kasnije.",
+
+    "VALIDATION_FAILED": "Zahtev nije ispravan.",
+    "NOT_FOUND": "Traženi resurs nije pronađen.",
+
+    "INVALID_STATUS_TRANSITION": "Rezervacija je već obrađena i ne može se ponovo menjati.",
+    "EMPLOYEE_NOT_FOUND": "Zaposleni više ne postoji ili nije dostupan.",
+    "ROOM_NOT_FOUND": "Jedna ili više izabranih sala više ne postoji ili nije dostupna.",
+    "ROOM_ALREADY_RESERVED": "Jedna ili više izabranih sala je već rezervisana u izabranom terminu.",
+    "INVALID_RESERVATION_TYPE": "Izabran je nevažeći tip rezervacije.",
+    "RESERVATION_MUST_BE_WITHIN_SINGLE_DAY": "Rezervacija mora biti u okviru jednog dana.",
+    "RESERVATION_TIME_OUTSIDE_WORKING_HOURS": "Rezervacije su dozvoljene samo između 08:00 i 22:00.",
+    "END_TIME_MUST_BE_AFTER_START_TIME": "Vreme završetka mora biti nakon vremena početka.",
+    "RESERVATION_TOO_SHORT": "Rezervacija mora trajati najmanje 15 minuta.",
+    "DUPLICATE_ROOMS_SELECTED": "Ne možete izabrati istu salu više puta.",
+
+    "EMPLOYEE_ID_REQUIRED": "Sesija je istekla ili nije važeća. Molimo prijavite se ponovo.",
+    "ROOM_IDS_REQUIRED": "Potrebno je izabrati bar jednu salu.",
+    "ROOM_ID_REQUIRED": "Izabrana sala nije ispravna.",
+    "RESERVATION_NAME_REQUIRED": "Naziv rezervacije je obavezan.",
+    "RESERVATION_TYPE_REQUIRED": "Tip rezervacije je obavezan.",
+    "START_TIME_REQUIRED": "Vreme početka je obavezno.",
+    "END_TIME_REQUIRED": "Vreme završetka je obavezno.",
+    "START_TIME_MUST_BE_PRESENT_OR_FUTURE": "Vreme početka mora biti u sadašnjosti ili budućnosti.",
+    "END_TIME_MUST_BE_PRESENT_OR_FUTURE": "Vreme završetka mora biti u sadašnjosti ili budućnosti.",
+
+    "RESERVATION_NOT_FOUND": "Rezervacija ne postoji ili je već obrisana."
+  }
 }

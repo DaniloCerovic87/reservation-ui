@@ -5,10 +5,6 @@
   "TOOLTIP_LOGGED_IN": "Logged in",
   "LOGOUT": "Logout",
 
-  "RESERVATION_ERR_AVAILABILITY_LOAD": "Could not load availability.",
-  "COMMON_ACTION_FAILED": "Action failed.",
-  "COMMON_USER_NOT_LOADED": "User data is unavailable. Please sign in again.",
-
   "RESERVATION_REVIEW_TITLE": "Review reservation",
   "RESERVATION_REVIEW_NAME": "Name",
   "RESERVATION_REVIEW_EMPLOYEE": "Employee",
@@ -21,8 +17,6 @@
   "RESERVATION_LOADING_ROOMS": "Loading available rooms...",
   "RESERVATION_CHOOSE_ROOMS": "Choose rooms",
   "RESERVATION_SELECTED": "selected",
-  "RESERVATION_AVAILABILITY_UNAVAILABLE": "Availability is currently unavailable. Please try again later.",
-  "RESERVATION_NO_ROOMS_FOR_RANGE": "No available rooms for this time range.",
 
   "RESERVATION_SEATS": "Seats",
   "RESERVATION_PCS": "PCs",
@@ -30,11 +24,7 @@
   "RESERVATION_PROJECTORS": "Projectors",
 
   "RESERVATION_NAME_LABEL": "Reservation name",
-  "RESERVATION_ERR_NAME_REQUIRED": "Name is required.",
-  "RESERVATION_ERR_NAME_MINLEN": "Min 2 characters.",
-
   "RESERVATION_TYPE_LABEL": "Reservation type",
-  "RESERVATION_ERR_TYPE_REQUIRED": "Type is required.",
 
   "RESERVATION_TYPE_BASIC": "Basic",
   "RESERVATION_TYPE_MASTER": "Master",
@@ -44,5 +34,55 @@
   "COMMON_YES": "Yes",
   "COMMON_NO": "No",
   "COMMON_CANCEL": "Cancel",
-  "COMMON_SAVE": "Save"
+  "COMMON_SAVE": "Save",
+
+  "ROOM_TYPE_AMPHITHEATER": "Amphitheater",
+  "ROOM_TYPE_CLASSROOM": "Classroom",
+  "ROOM_TYPE_COMPUTER_ROOM": "Computer lab",
+  "ROOM_TYPE_OTHER": "Other",
+
+  "errors": {
+    "RESERVATION_ERR_NAME_REQUIRED": "Name is required.",
+    "RESERVATION_ERR_NAME_MIN_LEN": "Min 2 characters.",
+    "RESERVATION_ERR_TYPE_REQUIRED": "Type is required.",
+
+    "RESERVATION_ERR_AVAILABILITY_LOAD": "Could not load availability.",
+    "COMMON_ACTION_FAILED": "Action failed.",
+    "COMMON_USER_NOT_LOADED": "User data is unavailable. Please sign in again.",
+
+    "RESERVATION_AVAILABILITY_UNAVAILABLE": "Availability is currently unavailable. Please try again later.",
+    "RESERVATION_NO_ROOMS_FOR_RANGE": "No available rooms for this time range.",
+
+    "API_NETWORK_ERROR": "Network error. Please check your connection.",
+    "API_SERVER_ERROR": "Something went wrong. Please try again.",
+    "API_REQUEST_FAILED": "Request failed.",
+    "INTERNAL_SERVER_ERROR": "An unexpected error occurred. Please try again later.",
+    "DOWNSTREAM_SERVICE_ERROR": "The system is temporarily unavailable. Please try again later.",
+
+    "VALIDATION_FAILED": "The request is not valid.",
+    "NOT_FOUND": "The requested resource was not found.",
+
+    "INVALID_STATUS_TRANSITION": "This reservation has already been processed and cannot be changed again.",
+    "EMPLOYEE_NOT_FOUND": "The employee no longer exists or is unavailable.",
+    "ROOM_NOT_FOUND": "One or more selected rooms no longer exist or are unavailable.",
+    "ROOM_ALREADY_RESERVED": "One or more selected rooms are already reserved for the selected time period.",
+    "INVALID_RESERVATION_TYPE": "The selected reservation type is invalid.",
+    "RESERVATION_MUST_BE_WITHIN_SINGLE_DAY": "The reservation must be within a single day.",
+    "RESERVATION_TIME_OUTSIDE_WORKING_HOURS": "Reservations are allowed only between 08:00 and 22:00.",
+    "END_TIME_MUST_BE_AFTER_START_TIME": "The end time must be after the start time.",
+    "RESERVATION_TOO_SHORT": "The reservation must be at least 15 minutes long.",
+    "DUPLICATE_ROOMS_SELECTED": "You can't select the same room more than once.",
+
+    "EMPLOYEE_ID_REQUIRED": "Session is invalid or expired. Please sign in again.",
+    "ROOM_IDS_REQUIRED": "At least one room must be selected.",
+    "ROOM_ID_REQUIRED": "Selected room is not valid.",
+    "RESERVATION_NAME_REQUIRED": "Reservation name is required.",
+    "RESERVATION_TYPE_REQUIRED": "Reservation type is required.",
+    "START_TIME_REQUIRED": "Start time is required.",
+    "END_TIME_REQUIRED": "End time is required.",
+    "START_TIME_MUST_BE_PRESENT_OR_FUTURE": "Start time must be in the present or future.",
+    "END_TIME_MUST_BE_PRESENT_OR_FUTURE": "End time must be in the present or future.",
+
+    "RESERVATION_NOT_FOUND": "The reservation does not exist or has already been deleted."
+  }
 }

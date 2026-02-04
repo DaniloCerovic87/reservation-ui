@@ -103,7 +103,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
     this.rooms = this.data.availableRooms ?? [];
 
     if (this.availabilityFailed) {
-      this.errorMsg = this.i18n.t('RESERVATION_ERR_AVAILABILITY_LOAD');
+      this.errorMsg = this.i18n.t('errors.RESERVATION_ERR_AVAILABILITY_LOAD');
       this.selected.clear();
       return;
     }
@@ -145,7 +145,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
     const employeeId = this.auth.currentUser()?.employeeId;
     if (!employeeId) {
-      this.errorMsg = this.i18n.t('COMMON_USER_NOT_LOADED');
+      this.errorMsg = this.i18n.t('errors.COMMON_USER_NOT_LOADED');
       return;
     }
 
@@ -166,11 +166,9 @@ export class ReserveRoomsDialogComponent implements OnInit {
       .subscribe({
         next: (created) => this.dialogRef.close({saved: true, created}),
         error: (e) => {
-          this.errorMsg = ApiErrorMapper.toMessage(e, this.i18n.t('COMMON_ACTION_FAILED'));
+          this.errorMsg = ApiErrorMapper.toMessage(e, (k) => this.i18n.t(k));
         }
-
       });
-
   }
 
   private fmt(s: string): string {
@@ -182,5 +180,14 @@ export class ReserveRoomsDialogComponent implements OnInit {
     if (!y || !m || !day) return s;
 
     return `${day}.${m}.${y} ${t.slice(0, 5)}`;
+  }
+
+  roomTypeKey(rt: string | null | undefined): string {
+    switch (rt ?? '') {
+      case 'Amphitheater': return 'ROOM_TYPE_AMPHITHEATER';
+      case 'Classroom': return 'ROOM_TYPE_CLASSROOM';
+      case 'Computer Room': return 'ROOM_TYPE_COMPUTER_ROOM';
+      default: return 'ROOM_TYPE_OTHER';
+    }
   }
 }

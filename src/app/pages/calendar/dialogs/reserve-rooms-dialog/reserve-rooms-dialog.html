@@ -25,9 +25,9 @@
       @if (rooms.length === 0) {
         <div class="empty">
           @if (availabilityFailed) {
-            {{ 'RESERVATION_AVAILABILITY_UNAVAILABLE' | t }}
+            {{ 'errors.RESERVATION_AVAILABILITY_UNAVAILABLE' | t }}
           } @else {
-            {{ 'RESERVATION_NO_ROOMS_FOR_RANGE' | t }}
+            {{ 'errors.RESERVATION_NO_ROOMS_FOR_RANGE' | t }}
           }
         </div>
       } @else {
@@ -39,7 +39,7 @@
             >
               <div class="roomLine1">
                 <span class="roomName">{{ r.name }}</span>
-                <span class="pill">{{ r.roomType }}</span>
+                <span class="pill">{{ roomTypeKey(r.roomType) | t }}</span>
               </div>
               <div class="roomLine2">
                 @if (r.capacity != null) {
@@ -79,10 +79,10 @@
       <mat-label>{{ 'RESERVATION_NAME_LABEL' | t }}</mat-label>
       <input formControlName="reservationName" matInput/>
       @if (isInvalid('reservationName') && hasError('reservationName', 'required')) {
-        <mat-error>{{ 'RESERVATION_ERR_NAME_REQUIRED' | t }}</mat-error>
+        <mat-error>{{ 'errors.RESERVATION_ERR_NAME_REQUIRED' | t }}</mat-error>
       }
       @if (isInvalid('reservationName') && hasError('reservationName', 'minlength')) {
-        <mat-error>{{ 'RESERVATION_ERR_NAME_MINLEN' | t }}</mat-error>
+        <mat-error>{{ 'errors.RESERVATION_ERR_NAME_MIN_LEN' | t }}</mat-error>
       }
     </mat-form-field>
 

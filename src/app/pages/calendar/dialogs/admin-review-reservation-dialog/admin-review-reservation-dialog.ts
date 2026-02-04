@@ -10,6 +10,7 @@ import {ReservationBlock} from '../../../../core/models/reservation-block';
 import {ReservationApiService} from '../../../../core/services/reservation-api';
 import {ApiErrorMapper} from '../../../../core/utils/api-error';
 import {TPipe} from '../../../../core/i18n/t.pipe';
+import {I18nService} from '../../../../core/i18n/I18n.service';
 
 export interface AdminReviewDialogData {
   reservation: ReservationBlock;
@@ -33,7 +34,8 @@ export class AdminReviewReservationDialog {
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: AdminReviewDialogData,
     private readonly dialogRef: MatDialogRef<AdminReviewReservationDialog, AdminReviewDialogResult>,
-    private readonly reservationApi: ReservationApiService
+    private readonly reservationApi: ReservationApiService,
+    private readonly i18n: I18nService
   ) {
   }
 
@@ -71,7 +73,7 @@ export class AdminReviewReservationDialog {
       .subscribe({
         next: () => this.dialogRef.close({action}),
         error: (e) => {
-          this.errorMsg = ApiErrorMapper.toMessage(e, 'Action failed.')
+          this.errorMsg = ApiErrorMapper.toMessage(e, (k) => this.i18n.t(k), 'errors.COMMON_ACTION_FAILED');
         }
       });
   }

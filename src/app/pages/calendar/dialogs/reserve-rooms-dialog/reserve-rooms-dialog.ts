@@ -1,23 +1,37 @@
-import {CommonModule} from '@angular/common';
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators,} from '@angular/forms';
-import {finalize} from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { finalize, filter, switchMap } from 'rxjs';
 
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
-import {RoomResponse} from '../../../../core/responses/room.response';
-import {CreateReservationRequest} from '../../../../core/requests/create-reservation.request';
-import {ReservationApiService} from '../../../../core/services/reservation-api';
-import {ReservationCreatedResponse} from '../../../../core/responses/reservation-created.response';
-import {ApiErrorMapper} from '../../../../core/utils/api-error';
-import {TPipe} from '../../../../core/i18n/t.pipe';
-import {AuthApi} from '../../../../core/auth/auth-api';
-import {I18nService} from '../../../../core/i18n/I18n.service';
+import { RoomResponse } from '../../../../core/responses/room.response';
+import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
+import { ReservationApiService } from '../../../../core/services/reservation-api';
+import { ReservationCreatedResponse } from '../../../../core/responses/reservation-created.response';
+import { ApiErrorMapper } from '../../../../core/utils/api-error';
+import { TPipe } from '../../../../core/i18n/t.pipe';
+import { AuthApi } from '../../../../core/auth/auth-api';
+import { I18nService } from '../../../../core/i18n/I18n.service';
+import {ConfirmDialog} from '../confirm-dialog/confirm-dialog';
+
+
 
 export interface ReserveRoomsDialogData {
   startTime: string;
@@ -70,14 +84,21 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: ReserveRoomsDialogData,
-    private readonly dialogRef: MatDialogRef<ReserveRoomsDialogComponent, ReserveRoomsDialogResult>,
+    private readonly dialogRef: MatDialogRef<
+      ReserveRoomsDialogComponent,
+      ReserveRoomsDialogResult
+    >,
     private readonly reservationApi: ReservationApiService,
     private readonly fb: NonNullableFormBuilder,
     private readonly auth: AuthApi,
-    private readonly i18n: I18nService
+    private readonly i18n: I18nService,
+    private readonly dialog: MatDialog
   ) {
     this.form = this.fb.group({
-      reservationName: this.fb.control('', [Validators.required, Validators.minLength(2)]),
+      reservationName: this.fb.control('', [
+        Validators.required,
+        Validators.minLength(2),
+      ]),
       reservationType: this.fb.control('', [Validators.required]),
     });
   }
@@ -109,7 +130,10 @@ export class ReserveRoomsDialogComponent implements OnInit {
     }
 
     // auto-select chosen room
-    if (this.data.initialRoomId && this.rooms.some(r => r.id === this.data.initialRoomId)) {
+    if (
+      this.data.initialRoomId &&
+      this.rooms.some((r) => r.id === this.data.initialRoomId)
+    ) {
       this.selected.add(this.data.initialRoomId);
     }
   }
@@ -129,7 +153,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close({saved: false});
+    this.dialogRef.close({ saved: false });
   }
 
   save() {
@@ -140,9 +164,7 @@ export class ReserveRoomsDialogComponent implements OnInit {
       return;
     }
 
-    this.saving = true;
-    this.errorMsg = null;
-
+    // Build request first (no API call yet)
     const employeeId = this.auth.currentUser()?.employeeId;
     if (!employeeId) {
       this.errorMsg = this.i18n.t('errors.COMMON_USER_NOT_LOADED');
@@ -153,21 +175,43 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
     const req: CreateReservationRequest = {
       roomIds: Array.from(this.selected),
-      employeeId: employeeId,
+      employeeId,
       startTime: this.data.startTime,
       endTime: this.data.endTime,
       reservationName: v.reservationName,
-      reservationType: v.reservationType
+      reservationType: v.reservationType,
     };
 
-    this.reservationApi
-      .createReservation(req)
-      .pipe(finalize(() => (this.saving = false)))
+    // Confirm first, then submit
+    this.dialog
+      .open(ConfirmDialog, {
+        width: '420px',
+        maxWidth: '92vw',
+        autoFocus: false,
+        data: {
+          titleKey: 'CONFIRM_TITLE',
+          messageKey: 'RESERVATION_CREATE_CONFIRM_MESSAGE',
+          confirmKey: 'COMMON_CONFIRM',
+          cancelKey: 'COMMON_CANCEL',
+        },
+      })
+      .afterClosed()
+      .pipe(
+        filter(Boolean),
+        switchMap(() => {
+          this.saving = true;
+          this.errorMsg = null;
+
+          return this.reservationApi
+            .createReservation(req)
+            .pipe(finalize(() => (this.saving = false)));
+        })
+      )
       .subscribe({
-        next: (created) => this.dialogRef.close({saved: true, created}),
+        next: (created) => this.dialogRef.close({ saved: true, created }),
         error: (e) => {
           this.errorMsg = ApiErrorMapper.toMessage(e, (k) => this.i18n.t(k));
-        }
+        },
       });
   }
 
@@ -184,10 +228,14 @@ export class ReserveRoomsDialogComponent implements OnInit {
 
   roomTypeKey(rt: string | null | undefined): string {
     switch (rt ?? '') {
-      case 'Amphitheater': return 'ROOM_TYPE_AMPHITHEATER';
-      case 'Classroom': return 'ROOM_TYPE_CLASSROOM';
-      case 'Computer Room': return 'ROOM_TYPE_COMPUTER_ROOM';
-      default: return 'ROOM_TYPE_OTHER';
+      case 'Amphitheater':
+        return 'ROOM_TYPE_AMPHITHEATER';
+      case 'Classroom':
+        return 'ROOM_TYPE_CLASSROOM';
+      case 'Computer Room':
+        return 'ROOM_TYPE_COMPUTER_ROOM';
+      default:
+        return 'ROOM_TYPE_OTHER';
     }
   }
 }

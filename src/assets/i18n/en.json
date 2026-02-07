@@ -42,6 +42,12 @@
   "ROOM_TYPE_COMPUTER_ROOM": "Computer lab",
   "ROOM_TYPE_OTHER": "Other",
 
+  "CONFIRM_TITLE": "Confirmation",
+  "COMMON_CONFIRM": "Confirm",
+  "RESERVATION_REVIEW_CONFIRM_APPROVE": "Are you sure you want to approve this reservation?",
+  "RESERVATION_REVIEW_CONFIRM_DECLINE": "Are you sure you want to decline this reservation?",
+  "RESERVATION_CREATE_CONFIRM_MESSAGE": "Are you sure you want to create this reservation?",
+
   "errors": {
     "RESERVATION_ERR_NAME_REQUIRED": "Name is required.",
     "RESERVATION_ERR_NAME_MIN_LEN": "Min 2 characters.",

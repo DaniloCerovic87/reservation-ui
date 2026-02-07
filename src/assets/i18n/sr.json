@@ -42,6 +42,12 @@
   "ROOM_TYPE_COMPUTER_ROOM": "Računarski kabinet",
   "ROOM_TYPE_OTHER": "Ostalo",
 
+  "CONFIRM_TITLE": "Potvrda",
+  "COMMON_CONFIRM": "Potvrdi",
+  "RESERVATION_REVIEW_CONFIRM_APPROVE": "Da li ste sigurni da želite da odobrite ovu rezervaciju?",
+  "RESERVATION_REVIEW_CONFIRM_DECLINE": "Da li ste sigurni da želite da odbijete ovu rezervaciju?",
+  "RESERVATION_CREATE_CONFIRM_MESSAGE": "Da li ste sigurni da želite da kreirate ovu rezervaciju?",
+
   "errors": {
     "RESERVATION_ERR_NAME_REQUIRED": "Naziv je obavezan.",
     "RESERVATION_ERR_NAME_MIN_LEN": "Minimum 2 karaktera.",

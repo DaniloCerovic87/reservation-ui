@@ -13,7 +13,8 @@ import {TPipe} from '../../../../core/i18n/t.pipe';
 import {I18nService} from '../../../../core/i18n/I18n.service';
 
 export interface AdminReviewDialogData {
-  reservation: ReservationBlock;
+  reservation: ReservationBlock,
+  rooms: string[]
 }
 
 export interface AdminReviewDialogResult {

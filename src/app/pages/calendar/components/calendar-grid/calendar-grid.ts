@@ -594,11 +594,13 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   private openAdminReviewDialog(r: ReservationBlock) {
+    const rooms = this.roomsForReservationId(r.reservationId);
+
     const ref = this.dialog.open(AdminReviewReservationDialog, {
       width: '520px',
       maxWidth: '92vw',
       autoFocus: false,
-      data: {reservation: r},
+      data: {reservation: r, rooms},
     });
 
     ref.afterClosed().subscribe((res: { action: 'APPROVE' | 'DECLINE' } | undefined) => {
@@ -628,6 +630,16 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
     this.allReservations = this.allReservations.filter(b => b.reservationId !== created.id);
     this.allReservations = [...newBlocks, ...this.allReservations];
+  }
+
+  private roomsForReservationId(reservationId: number): string[] {
+    const names = this.allReservations
+      .filter(b => b.reservationId === reservationId)
+      .map(b => b.roomName)
+      .filter(Boolean);
+
+    // unique + stable order
+    return Array.from(new Set(names));
   }
 
 }

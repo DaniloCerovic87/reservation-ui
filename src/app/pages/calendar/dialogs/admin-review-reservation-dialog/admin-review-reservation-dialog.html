@@ -9,22 +9,33 @@
 
   <div class="row">
     <span class="label">{{ 'RESERVATION_REVIEW_NAME' | t }}</span>
-    <span>{{ data.reservation.reservationName }}</span>
+    <span class="value">{{ data.reservation.reservationName }}</span>
   </div>
 
   <div class="row">
     <span class="label">{{ 'RESERVATION_REVIEW_EMPLOYEE' | t }}</span>
-    <span>{{ data.reservation.employeeName }}</span>
+    <span class="value">{{ data.reservation.employeeName }}</span>
   </div>
 
-  <div class="row">
-    <span class="label">{{ 'RESERVATION_REVIEW_ROOM' | t }}</span>
-    <span>{{ data.reservation.roomName }}</span>
+  <div class="row row--rooms">
+    <span class="label">{{ 'RESERVATION_REVIEW_ROOMS' | t }}</span>
+
+    @if (data.rooms.length) {
+      <ul class="roomsList value">
+        @for (rn of data.rooms; track rn) {
+          <li>{{ rn }}</li>
+        }
+      </ul>
+    } @else {
+      <span class="value">{{ data.reservation.roomName }}</span>
+    }
   </div>
 
   <div class="row">
     <span class="label">{{ 'RESERVATION_REVIEW_TIME' | t }}</span>
-    <span>{{ hhmm(data.reservation.startTime) }}–{{ hhmm(data.reservation.endTime) }}</span>
+    <span class="value">
+      {{ hhmm(data.reservation.startTime) }}–{{ hhmm(data.reservation.endTime) }}
+    </span>
   </div>
 </div>
 

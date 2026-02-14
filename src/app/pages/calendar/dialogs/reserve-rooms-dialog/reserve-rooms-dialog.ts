@@ -19,8 +19,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { MatSelectModule } from '@angular/material/select';
 import { RoomResponse } from '../../../../core/responses/room.response';
 import { CreateReservationRequest } from '../../../../core/requests/create-reservation.request';
 import { ReservationApiService } from '../../../../core/services/reservation-api';
@@ -63,7 +64,8 @@ type ReserveForm = FormGroup<{
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    TPipe,
+    MatProgressSpinnerModule,
+    TPipe
   ],
   templateUrl: './reserve-rooms-dialog.html',
   styleUrls: ['./reserve-rooms-dialog.scss'],

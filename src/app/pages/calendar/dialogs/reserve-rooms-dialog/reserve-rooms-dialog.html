@@ -3,6 +3,12 @@
   <span class="subtitle">{{ rangeLabel }}</span>
 </h2>
 
+@if (saving) {
+  <div class="dlgLoadingOverlay" aria-live="polite">
+    <mat-progress-spinner mode="indeterminate" diameter="34"></mat-progress-spinner>
+  </div>
+}
+
 <div class="content" mat-dialog-content>
   @if (loading) {
     <div class="info loading">{{ 'RESERVATION_LOADING_ROOMS' | t }}</div>

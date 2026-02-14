@@ -1,5 +1,11 @@
 <h2 mat-dialog-title>{{ 'RESERVATION_REVIEW_TITLE' | t }}</h2>
 
+@if (saving) {
+  <div class="dlgLoadingOverlay" aria-live="polite">
+    <mat-progress-spinner mode="indeterminate" diameter="34"></mat-progress-spinner>
+  </div>
+}
+
 <div mat-dialog-content>
   @if (errorMsg) {
     <div class="errorBanner" role="alert">

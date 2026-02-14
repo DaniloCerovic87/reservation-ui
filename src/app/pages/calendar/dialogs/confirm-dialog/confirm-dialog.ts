@@ -7,8 +7,8 @@ import {TPipe} from '../../../../core/i18n/t.pipe';
 export interface ConfirmDialogData {
   titleKey: string;
   messageKey: string;
-  confirmKey?: string; // npr COMMON_CONFIRM
-  cancelKey?: string;  // npr COMMON_CANCEL
+  confirmKey?: string;
+  cancelKey?: string;
 }
 
 @Component({

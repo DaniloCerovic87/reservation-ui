@@ -10,8 +10,9 @@ import {
 } from '@angular/forms';
 import { finalize, filter, switchMap } from 'rxjs';
 
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule,MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -61,6 +62,7 @@ type RoomDecisionForm = FormGroup<{
     MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressSpinnerModule,
     TPipe,
   ],
   templateUrl: './admin-review-reservation-dialog.html',
@@ -146,7 +148,9 @@ export class AdminReviewReservationDialog {
   }
 
   submitReview() {
-    if (this.saving) return;
+    if (this.saving) {
+      return;
+    }
 
     this.submitted = true;
     this.errorMsg = null;
@@ -158,6 +162,8 @@ export class AdminReviewReservationDialog {
       this.form.markAllAsTouched();
       return;
     }
+
+    this.saving = true;
 
     const reservationId = this.data.reservation.reservationId;
 
@@ -184,6 +190,7 @@ export class AdminReviewReservationDialog {
         width: '420px',
         maxWidth: '92vw',
         autoFocus: false,
+        disableClose: true,
         data: {
           titleKey: 'CONFIRM_TITLE',
           messageKey: 'RESERVATION_REVIEW_CONFIRM_SUBMIT',

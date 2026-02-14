@@ -527,6 +527,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
               maxWidth: '92vw',
               panelClass: 'reserveRoomsDialogPanel',
               autoFocus: false,
+              disableClose: true,
               data: {
                 startTime: startLdt,
                 endTime: endLdt,
@@ -536,7 +537,6 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
                 availableRooms,
                 availabilityFailed: false,
 
-                // keep this for backward compatibility if you still use it
                 roomsSnapshot: this.rooms,
                 isAdmin: this.isAdmin
               },
@@ -556,6 +556,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
               maxWidth: '92vw',
               panelClass: 'reserveRoomsDialogPanel',
               autoFocus: false,
+              disableClose: true,
               data: {
                 startTime: startLdt,
                 endTime: endLdt,

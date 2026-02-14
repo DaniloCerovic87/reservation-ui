@@ -31,8 +31,6 @@ import { AuthApi } from '../../../../core/auth/auth-api';
 import { I18nService } from '../../../../core/i18n/I18n.service';
 import {ConfirmDialog} from '../confirm-dialog/confirm-dialog';
 
-
-
 export interface ReserveRoomsDialogData {
   startTime: string;
   endTime: string;
@@ -40,6 +38,7 @@ export interface ReserveRoomsDialogData {
   roomsSnapshot: RoomResponse[];
   availableRooms?: RoomResponse[];
   availabilityFailed: boolean;
+  isAdmin: boolean;
 }
 
 export interface ReserveRoomsDialogResult {

@@ -197,15 +197,21 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
   }
 
   onGridMouseDown(ev: MouseEvent, roomId: number) {
-    if (ev.button !== 0) return;
+    if (ev.button !== 0) {
+      return;
+    }
 
     const target = ev.target as HTMLElement;
-    if (target.closest('.block')) return;
+    if (target.closest('.block')) {
+      return;
+    }
 
     ev.preventDefault();
 
     // Do not allow selection on a past day
-    if (this.isPastDaySelected()) return;
+    if (this.isPastDaySelected()) {
+      return;
+    }
 
     const col = ev.currentTarget as HTMLElement;
     const rect = col.getBoundingClientRect();
@@ -214,7 +220,9 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     const slot = this.yToSlotIndex(y);
 
     // Do not allow starting selection in the past (for today)
-    if (this.isPastSlotIndex(slot)) return;
+    if (this.isPastSlotIndex(slot)) {
+      return;
+    }
 
     this.isSelecting = true;
     this.selectionRoomId = roomId;
@@ -530,6 +538,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
 
                 // keep this for backward compatibility if you still use it
                 roomsSnapshot: this.rooms,
+                isAdmin: this.isAdmin
               },
             })
             .afterClosed()
@@ -556,6 +565,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
                 availabilityFailed: true,
 
                 roomsSnapshot: this.rooms,
+                isAdmin: this.isAdmin
               },
             })
             .afterClosed()
@@ -603,25 +613,23 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
       data: {reservation: r, rooms},
     });
 
-    ref.afterClosed().subscribe((res: { action: 'APPROVE' | 'DECLINE' } | undefined) => {
-      if (!res?.action) return;
+    ref.afterClosed().subscribe((res: { saved: boolean; approvedRoomIds?: number[]; declinedRoomIds?: number[] } | undefined) => {
+      if (!res?.saved) return;
 
-      if (res.action === 'APPROVE') {
-        this.patchReservationStatus(r.reservationId, 'APPROVED');
-      } else {
-        this.removeReservationFromGrid(r.reservationId); // DECLINED should not be shown
-      }
+      const approved = new Set(res.approvedRoomIds ?? []);
+      const declined = new Set(res.declinedRoomIds ?? []);
+
+      this.allReservations = this.allReservations.map(b => {
+        if (b.reservationId !== r.reservationId) return b;
+
+        if (approved.has(b.roomId)) return { ...b, status: 'APPROVED' };
+        if (declined.has(b.roomId)) return { ...b, status: 'DECLINED' };
+
+        return b;
+      });
+
+      this.allReservations = this.allReservations.filter(b => b.status !== 'DECLINED');
     });
-  }
-
-  private patchReservationStatus(id: number, newStatus: 'APPROVED' | 'DECLINED') {
-    this.allReservations = this.allReservations.map(b =>
-      b.reservationId === id ? {...b, status: newStatus} : b
-    );
-  }
-
-  private removeReservationFromGrid(id: number) {
-    this.allReservations = this.allReservations.filter(b => b.reservationId !== id);
   }
 
   private addCreatedReservationToGrid(created: ReservationCreatedResponse) {
@@ -632,14 +640,19 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     this.allReservations = [...newBlocks, ...this.allReservations];
   }
 
-  private roomsForReservationId(reservationId: number): string[] {
-    const names = this.allReservations
+  private roomsForReservationId(reservationId: number): { roomId: number; roomName: string }[] {
+    const items = this.allReservations
       .filter(b => b.reservationId === reservationId)
-      .map(b => b.roomName)
-      .filter(Boolean);
+      .filter(b => b.status === 'PENDING')
+      .map(b => ({ roomId: b.roomId, roomName: b.roomName }))
+      .filter(x => !!x.roomName);
 
-    // unique + stable order
-    return Array.from(new Set(names));
+    // unique by roomId
+    const map = new Map<number, {roomId:number; roomName:string}>();
+    for (const it of items) {
+      map.set(it.roomId, it);
+    }
+    return Array.from(map.values());
   }
 
 }

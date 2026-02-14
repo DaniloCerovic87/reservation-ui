@@ -17,25 +17,55 @@
     <span class="value">{{ data.reservation.employeeName }}</span>
   </div>
 
-  <div class="row row--rooms">
-    <span class="label">{{ 'RESERVATION_REVIEW_ROOMS' | t }}</span>
-
-    @if (data.rooms.length) {
-      <ul class="roomsList value">
-        @for (rn of data.rooms; track rn) {
-          <li>{{ rn }}</li>
-        }
-      </ul>
-    } @else {
-      <span class="value">{{ data.reservation.roomName }}</span>
-    }
-  </div>
-
   <div class="row">
     <span class="label">{{ 'RESERVATION_REVIEW_TIME' | t }}</span>
     <span class="value">
       {{ hhmm(data.reservation.startTime) }}–{{ hhmm(data.reservation.endTime) }}
     </span>
+  </div>
+
+  <mat-divider class="myDivider"></mat-divider>
+
+  <div class="roomsReview">
+    @for (g of roomsFa.controls; track g.controls.roomId.value; let i = $index) {
+      <div class="roomRow">
+        <div class="roomName">{{ g.controls.roomName.value }}</div>
+
+        <mat-radio-group
+          class="decisionGroup"
+          [formControl]="g.controls.decision"
+          (change)="onDecisionChange(i)"
+        >
+          <mat-radio-button value="PENDING">{{ 'COMMON_PENDING' | t }}</mat-radio-button>
+          <mat-radio-button value="APPROVE">{{ 'COMMON_APPROVE' | t }}</mat-radio-button>
+          <mat-radio-button value="DECLINE">{{ 'COMMON_DECLINE' | t }}</mat-radio-button>
+        </mat-radio-group>
+
+        @if (isDecline(i)) {
+          <mat-form-field appearance="outline" class="commentField">
+            <mat-label>{{ 'RESERVATION_REVIEW_DECLINE_REASON' | t }}</mat-label>
+
+            <textarea
+              matInput
+              rows="2"
+              maxlength="500"
+              [formControl]="commentCtrlAt(i)"
+              (blur)="markCommentTouched(i)"
+            ></textarea>
+
+            @if (showCommentError(i)) {
+              <mat-error>
+                @if (commentHasError(i, 'required')) {
+                  {{ 'errors.REQUIRED_FIELD' | t }}
+                } @else if (commentHasError(i, 'minlength')) {
+                  {{ 'errors.MIN_LENGTH_3' | t }}
+                }
+              </mat-error>
+            }
+          </mat-form-field>
+        }
+      </div>
+    }
   </div>
 </div>
 
@@ -44,11 +74,7 @@
     {{ 'COMMON_CANCEL' | t }}
   </button>
 
-  <button (click)="decline()" [disabled]="saving" mat-stroked-button>
-    {{ 'RESERVATION_REVIEW_DECLINE' | t }}
-  </button>
-
-  <button (click)="approve()" [disabled]="saving" color="primary" mat-flat-button>
-    {{ 'RESERVATION_REVIEW_APPROVE' | t }}
+  <button (click)="submitReview()" [disabled]="saving" color="primary" mat-flat-button>
+    {{ 'COMMON_SUBMIT' | t }}
   </button>
 </div>

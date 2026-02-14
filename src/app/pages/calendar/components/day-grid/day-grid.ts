@@ -66,9 +66,6 @@ export class DayGrid {
     const u = this.auth.currentUser();
     this.myEmployeeId = u?.employeeId ?? 0;
 
-    this.isAdmin = u?.role === 'ADMIN';
-    if (this.isAdmin) this.viewMode = 'ALL';
-
     if (!this.myEmployeeId) this.viewMode = 'ALL';
 
     // keep in sync (no memory leaks)
@@ -76,12 +73,7 @@ export class DayGrid {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
         this.myEmployeeId = user?.employeeId ?? 0;
-
         this.isAdmin = user?.role === 'ADMIN';
-
-        if (this.isAdmin) {
-          this.viewMode = 'ALL';
-        }
 
         // safety: do not show MINE if employee id not present
         if (!this.myEmployeeId && this.viewMode === 'MINE') {

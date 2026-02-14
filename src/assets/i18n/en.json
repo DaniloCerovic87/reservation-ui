@@ -44,14 +44,21 @@
 
   "CONFIRM_TITLE": "Confirmation",
   "COMMON_CONFIRM": "Confirm",
-  "RESERVATION_REVIEW_CONFIRM_APPROVE": "Are you sure you want to approve this reservation?",
-  "RESERVATION_REVIEW_CONFIRM_DECLINE": "Are you sure you want to decline this reservation?",
+
+  "COMMON_SUBMIT": "Submit",
+  "COMMON_PENDING": "Pending",
+  "COMMON_APPROVE": "Approve",
+  "COMMON_DECLINE": "Decline",
+
+  "RESERVATION_REVIEW_DECLINE_REASON": "Reason for decline",
+  "RESERVATION_REVIEW_CONFIRM_SUBMIT": "Are you sure you want to submit these decisions?",
   "RESERVATION_CREATE_CONFIRM_MESSAGE": "Are you sure you want to create this reservation?",
 
   "errors": {
     "RESERVATION_ERR_NAME_REQUIRED": "Name is required.",
     "RESERVATION_ERR_NAME_MIN_LEN": "Min 2 characters.",
     "RESERVATION_ERR_TYPE_REQUIRED": "Type is required.",
+    "REQUIRED_FIELD": "This field is required.",
 
     "RESERVATION_ERR_AVAILABILITY_LOAD": "Could not load availability.",
     "COMMON_ACTION_FAILED": "Action failed.",
@@ -60,6 +67,7 @@
     "RESERVATION_AVAILABILITY_UNAVAILABLE": "Availability is currently unavailable. Please try again later.",
     "RESERVATION_NO_ROOMS_FOR_RANGE": "No available rooms for this time range.",
 
+    "AUTO_APPROVE_FORBIDDEN": "You do not have permission to auto-approve reservations.",
     "API_NETWORK_ERROR": "Network error. Please check your connection.",
     "API_SERVER_ERROR": "Something went wrong. Please try again.",
     "API_REQUEST_FAILED": "Request failed.",
@@ -92,6 +100,12 @@
     "START_TIME_MUST_BE_PRESENT_OR_FUTURE": "Start time must be in the present or future.",
     "END_TIME_MUST_BE_PRESENT_OR_FUTURE": "End time must be in the present or future.",
 
-    "RESERVATION_NOT_FOUND": "The reservation does not exist or has already been deleted."
+    "RESERVATION_NOT_FOUND": "The reservation does not exist or has already been deleted.",
+    "CALENDAR_ENTRY_NOT_FOUND": "This reservation entry no longer exists or was changed. Please refresh and try again.",
+
+    "DUPLICATE_ROOM_ID_IN_APPROVE_LIST": "The same room is listed more than once for approval.",
+    "DUPLICATE_ROOM_ID_IN_DECLINE_LIST": "The same room is listed more than once for decline.",
+    "ROOM_ID_IN_BOTH_APPROVE_AND_DECLINE": "A room cannot be both approved and declined.",
+    "ROOM_NOT_PART_OF_RESERVATION": "One or more rooms do not belong to this reservation."
   }
 }

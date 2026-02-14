@@ -44,14 +44,20 @@
 
   "CONFIRM_TITLE": "Potvrda",
   "COMMON_CONFIRM": "Potvrdi",
-  "RESERVATION_REVIEW_CONFIRM_APPROVE": "Da li ste sigurni da želite da odobrite ovu rezervaciju?",
-  "RESERVATION_REVIEW_CONFIRM_DECLINE": "Da li ste sigurni da želite da odbijete ovu rezervaciju?",
+  "COMMON_SUBMIT": "Sačuvaj",
+  "COMMON_PENDING": "Na čekanju",
+  "COMMON_APPROVE": "Odobri",
+  "COMMON_DECLINE": "Odbij",
+
+  "RESERVATION_REVIEW_DECLINE_REASON": "Razlog odbijanja",
+  "RESERVATION_REVIEW_CONFIRM_SUBMIT": "Da li ste sigurni da želite da sačuvate ove odluke?",
   "RESERVATION_CREATE_CONFIRM_MESSAGE": "Da li ste sigurni da želite da kreirate ovu rezervaciju?",
 
   "errors": {
     "RESERVATION_ERR_NAME_REQUIRED": "Naziv je obavezan.",
     "RESERVATION_ERR_NAME_MIN_LEN": "Minimum 2 karaktera.",
     "RESERVATION_ERR_TYPE_REQUIRED": "Tip je obavezan.",
+    "REQUIRED_FIELD": "Ovo polje je obavezno.",
 
     "RESERVATION_ERR_AVAILABILITY_LOAD": "Došlo je do greške prilikom učitavanja dostupnosti.",
     "COMMON_ACTION_FAILED": "Akcija nije uspela.",
@@ -60,6 +66,7 @@
     "RESERVATION_AVAILABILITY_UNAVAILABLE": "Provera dostupnosti trenutno nije dostupna. Pokušajte ponovo kasnije.",
     "RESERVATION_NO_ROOMS_FOR_RANGE": "Nema dostupnih sala za izabrani vremenski period.",
 
+    "AUTO_APPROVE_FORBIDDEN": "Nemate pravo da automatski odobrite rezervaciju.",
     "API_NETWORK_ERROR": "Nema konekcije. Proverite internet i pokušajte ponovo.",
     "API_SERVER_ERROR": "Došlo je do greške na serveru. Pokušajte ponovo.",
     "API_REQUEST_FAILED": "Zahtev nije uspeo.",
@@ -92,6 +99,12 @@
     "START_TIME_MUST_BE_PRESENT_OR_FUTURE": "Vreme početka mora biti u sadašnjosti ili budućnosti.",
     "END_TIME_MUST_BE_PRESENT_OR_FUTURE": "Vreme završetka mora biti u sadašnjosti ili budućnosti.",
 
-    "RESERVATION_NOT_FOUND": "Rezervacija ne postoji ili je već obrisana."
+    "RESERVATION_NOT_FOUND": "Rezervacija ne postoji ili je već obrisana.",
+    "CALENDAR_ENTRY_NOT_FOUND": "Ova stavka rezervacije više ne postoji ili je u međuvremenu promenjena. Osvežite stranicu i pokušajte ponovo.",
+
+    "DUPLICATE_ROOM_ID_IN_APPROVE_LIST": "Ista soba je navedena više puta za odobravanje.",
+    "DUPLICATE_ROOM_ID_IN_DECLINE_LIST": "Ista soba je navedena više puta za odbijanje.",
+    "ROOM_ID_IN_BOTH_APPROVE_AND_DECLINE": "Soba ne može biti i odobrena i odbijena.",
+    "ROOM_NOT_PART_OF_RESERVATION": "Jedna ili više soba ne pripadaju ovoj rezervaciji."
   }
 }

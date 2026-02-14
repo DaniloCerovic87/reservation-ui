@@ -21,10 +21,8 @@
       class="filterGroup"
     >
       <mat-button-toggle value="ALL">{{ 'FILTER_ALL' | t }}</mat-button-toggle>
+      <mat-button-toggle value="MINE">{{ 'FILTER_MINE' | t }}</mat-button-toggle>
 
-      @if (!isAdmin) {
-        <mat-button-toggle value="MINE">{{ 'FILTER_MINE' | t }}</mat-button-toggle>
-      }
     </mat-button-toggle-group>
   </div>
 

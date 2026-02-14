@@ -337,7 +337,7 @@ export class CalendarGrid implements OnInit, OnChanges, AfterViewInit, OnDestroy
     const startMin = this.minutesFromGridStart(r.startTime);
     const endMin = this.minutesFromGridStart(r.endTime);
     const durationMin = Math.max(0, endMin - startMin);
-    return durationMin <= 30;
+    return durationMin <= 15;
   }
 
   canAdminReview(r: ReservationBlock): boolean {
